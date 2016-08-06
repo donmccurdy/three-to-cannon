@@ -1,0 +1,30 @@
+{
+  "name": "three-to-cannon",
+  "version": "1.0.0",
+  "description": "Convert a THREE.Mesh to a CANNON.Shape.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/donmccurdy/three-to-cannon.git"
+  },
+  "keywords": [
+    "threejs",
+    "three",
+    "cannonjs",
+    "cannon",
+    "physics",
+    "simulation"
+  ],
+  "author": "Don McCurdy <dm@donmccurdy.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/donmccurdy/three-to-cannon/issues"
+  },
+  "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
+  "dependencies": {
+    "cannon": "^0.6.2"
+  }
+}
