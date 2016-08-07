@@ -1,6 +1,6 @@
 # three-to-cannon
 
-Convert a THREE.Mesh to a CANNON.Shape.
+Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplified shapes.
 
 ## Usage
 
