@@ -4,7 +4,8 @@
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
     "type": "git",
