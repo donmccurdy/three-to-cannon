@@ -1,5 +1,6 @@
 var CANNON = require('cannon'),
-    quickhull = require('./lib/THREE.quickhull');
+    quickhull = require('./lib/THREE.quickhull'),
+    voronoi = require('d3-voronoi');
 
 var PI_2 = Math.PI / 2;
 
@@ -7,6 +8,7 @@ var Type = {
   BOX: 'Box',
   CYLINDER: 'Cylinder',
   SPHERE: 'Sphere',
+  HEIGHTFIELD: 'Heightfield',
   HULL: 'ConvexPolyhedron'
 };
 
@@ -26,8 +28,10 @@ module.exports = CANNON.mesh2shape = function (object, options) {
     return createBoundingCylinderShape(object, options);
   } else if (options.type === Type.SPHERE) {
     return createBoundingSphereShape(object, options);
+  } else if (options.type === Type.HEIGHTFIELD) {
+    return createHeightfieldShape(object, options);
   } else if (options.type === Type.HULL) {
-    return createConvexPolyhedron(object);
+    return createConvexPolyhedronShape(object);
   } else if (options.type) {
     throw new Error('[CANNON.mesh2shape] Invalid type "%s".', options.type);
   }
@@ -120,11 +124,57 @@ function createBoundingBoxShape (object) {
 }
 
 /**
+ * Computes heightfield, sampled at fixed spacing, using a voronoi diagram.
+ * @param  {THREE.Object3D} object
+ * @param  {object} options
+ * @return {CANNON.Shape}
+ */
+function createHeightfieldShape (object, options) {
+  var geometry = getGeometry(object),
+      vertices = geometry && getVertices(geometry),
+      spacing = options.heightfieldSpacing || 1.0,
+      matrix = [],
+      helper, box, diagram;
+
+  if (!vertices.length) return null;
+
+  // Compute extent of vertices.
+  helper = new THREE.BoundingBoxHelper(object);
+  helper.update();
+  box = helper.box;
+
+  if (!isFinite(box.min.lengthSq())) return null;
+
+  // Compute Voronoi Diagram, using X and Z dimensions.
+  diagram = voronoi(vertices.map(function (v) {
+    var point = [v.x, v.z];
+    point.y = v.y;
+    return point;
+  }));
+
+  // Construct heightmap matrix, using Y coordinates of nearest X/Z points.
+  for (var x = box.min.x;
+       x <= box.max.x || matrix.length < 2;
+       x += spacing) {
+    matrix.push([]);
+    for (var z = box.min.z;
+         z <= box.max.z || matrix[matrix.length - 1].length < 2;
+         z += spacing) {
+      matrix[matrix.length - 1].push(diagram.find(x, z).y);
+    }
+  }
+
+  console.table(matrix);
+
+  return new CANNON.Heightfield(matrix, {elementSize: spacing});
+}
+
+/**
  * Computes 3D convex hull as a CANNON.ConvexPolyhedron.
  * @param  {THREE.Object3D} mesh
  * @return {CANNON.Shape}
  */
-function createConvexPolyhedron (object) {
+function createConvexPolyhedronShape (object) {
   var i, vertices, faces, hull,
       eps = 1e-4,
       geometry = getGeometry(object);
@@ -178,6 +228,7 @@ function createCylinderShape (geometry) {
 
 /**
  * @param  {THREE.Object3D} object
+ * @param  {object} options
  * @return {CANNON.Shape}
  */
 function createBoundingCylinderShape (object, options) {
@@ -235,6 +286,7 @@ function createSphereShape (geometry) {
 
 /**
  * @param  {THREE.Object3D} object
+ * @param  {object} options
  * @return {CANNON.Shape}
  */
 function createBoundingSphereShape (object, options) {
