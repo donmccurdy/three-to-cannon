@@ -1,8 +1,9 @@
 var CANNON = require('cannon'),
     quickhull = require('./lib/THREE.quickhull'),
-    voronoi = require('d3-voronoi');
+    voronoi = require('d3-voronoi').voronoi();
 
-var PI_2 = Math.PI / 2;
+var PI_2 = Math.PI / 2,
+    EPS = 1e-4;
 
 var Type = {
   BOX: 'Box',
@@ -130,27 +131,49 @@ function createBoundingBoxShape (object) {
  * @return {CANNON.Shape}
  */
 function createHeightfieldShape (object, options) {
-  var geometry = getGeometry(object),
-      vertices = geometry && getVertices(geometry),
-      spacing = options.heightfieldSpacing || 1.0,
+  var i, vertices, faces, hull,
+      geometry = getGeometry(object);
+
+  if (geometry instanceof THREE.BufferGeometry) {
+    geometry = new THREE.Geometry().fromBufferGeometry(geometry);
+  }
+
+  if (!geometry.vertices.length) return null;
+
+  // Compute the 3D convex hull.
+  geometry = perturbGeometry(geometry);
+  hull = quickhull(geometry);
+
+  vertices = new Set();
+  hull.faces.forEach(function (face) {
+    if (face.normal.y < 0) return; // Clip lower faces.
+    vertices.add(hull.vertices[face.a]);
+    vertices.add(hull.vertices[face.b]);
+    vertices.add(hull.vertices[face.c]);
+  });
+
+  geometry = new THREE.Geometry();
+  geometry.vertices = vertices = Array.from(vertices);
+
+  var spacing = options.heightfieldSpacing || 1.0,
       matrix = [],
+      sites = [],
       helper, box, diagram;
 
-  if (!vertices.length) return null;
-
   // Compute extent of vertices.
-  helper = new THREE.BoundingBoxHelper(object);
+  helper = new THREE.BoundingBoxHelper(new THREE.Points(geometry));
   helper.update();
   box = helper.box;
 
   if (!isFinite(box.min.lengthSq())) return null;
 
   // Compute Voronoi Diagram, using X and Z dimensions.
-  diagram = voronoi(vertices.map(function (v) {
-    var point = [v.x, v.z];
-    point.y = v.y;
-    return point;
-  }));
+  sites = vertices.map(function (v) {
+    var site = [v.x, v.z];
+    site.y = v.y;
+    return site;
+  });
+  diagram = voronoi(sites);
 
   // Construct heightmap matrix, using Y coordinates of nearest X/Z points.
   for (var x = box.min.x;
@@ -160,13 +183,15 @@ function createHeightfieldShape (object, options) {
     for (var z = box.min.z;
          z <= box.max.z || matrix[matrix.length - 1].length < 2;
          z += spacing) {
-      matrix[matrix.length - 1].push(diagram.find(x, z).y);
+      var siteIndex = diagram.find(x, z).index;
+      matrix[matrix.length - 1].push(sites[siteIndex].y);
     }
   }
 
-  console.table(matrix);
-
-  return new CANNON.Heightfield(matrix, {elementSize: spacing});
+  var shape = new CANNON.Heightfield(matrix, {elementSize: spacing});
+  shape.orientation = new CANNON.Quaternion();
+  shape.orientation.setFromEuler(THREE.Math.degToRad(-90), 0, 0, 'XYZ').normalize();
+  return shape;
 }
 
 /**
@@ -176,19 +201,16 @@ function createHeightfieldShape (object, options) {
  */
 function createConvexPolyhedronShape (object) {
   var i, vertices, faces, hull,
-      eps = 1e-4,
       geometry = getGeometry(object);
 
-  if (!geometry || !geometry.vertices.length) return null;
-
-  // Perturb.
-  for (i = 0; i < geometry.vertices.length; i++) {
-    geometry.vertices[i].x += (Math.random() - 0.5) * eps;
-    geometry.vertices[i].y += (Math.random() - 0.5) * eps;
-    geometry.vertices[i].z += (Math.random() - 0.5) * eps;
+  if (geometry instanceof THREE.BufferGeometry) {
+    geometry = new THREE.Geometry().fromBufferGeometry(geometry);
   }
 
+  if (!geometry.vertices.length) return null;
+
   // Compute the 3D convex hull.
+  geometry = perturbGeometry(geometry);
   hull = quickhull(geometry);
 
   // Convert from THREE.Vector3 to CANNON.Vec3.
@@ -393,4 +415,17 @@ function getMeshes (object) {
     }
   });
   return meshes;
+}
+
+/**
+ * @param  {THREE.Geometry} geometry
+ * @return {THREE.Geometry}
+ */
+function perturbGeometry (geometry) {
+  for (var i = 0; i < geometry.vertices.length; i++) {
+    geometry.vertices[i].x += (Math.random() - 0.5) * EPS;
+    geometry.vertices[i].y += (Math.random() - 0.5) * EPS;
+    geometry.vertices[i].z += (Math.random() - 0.5) * EPS;
+  }
+  return geometry;
 }
