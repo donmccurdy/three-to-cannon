@@ -10,6 +10,8 @@ var Type = {
   HULL: 'ConvexPolyhedron'
 };
 
+// TEST TEST TEST TEST
+
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
  * @param  {THREE.Object3D} object
@@ -320,7 +322,7 @@ function getVertices (geometry) {
   if (!geometry.attributes) {
     geometry = new THREE.BufferGeometry().fromGeometry(geometry);
   }
-  return geometry.attributes.position.array;
+  return (geometry.attributes.position || {}).array || [];
 }
 
 /**

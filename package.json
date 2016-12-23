@@ -25,7 +25,7 @@
     "url": "https://github.com/donmccurdy/three-to-cannon/issues"
   },
   "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
-  "dependencies": {
-    "cannon": "^0.6.2"
+  "peerDependencies": {
+    "cannon": "github:schteppe/cannon.js#v0.6.2-dev1"
   }
 }
