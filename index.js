@@ -171,6 +171,14 @@ function createCylinderShape (geometry) {
     params.height,
     params.radialSegments
   );
+
+  // Include metadata for serialization.
+  shape._type = CANNON.Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
+  shape.radiusTop = params.radiusTop;
+  shape.radiusBottom = params.radiusBottom;
+  shape.height = params.height;
+  shape.numSegments = params.radialSegments;
+
   shape.orientation = new CANNON.Quaternion();
   shape.orientation.setFromEuler(THREE.Math.degToRad(-90), 0, 0, 'XYZ').normalize();
   return shape;
@@ -198,6 +206,14 @@ function createBoundingCylinderShape (object, options) {
 
   // Create shape.
   shape = new CANNON.Cylinder(radius, radius, height, 12);
+
+  // Include metadata for serialization.
+  shape._type = CANNON.Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
+  shape.radiusTop = radius;
+  shape.radiusBottom = radius;
+  shape.height = height;
+  shape.numSegments = 12;
+
   shape.orientation = new CANNON.Quaternion();
   shape.orientation.setFromEuler(
     majorAxis === 'y' ? PI_2 : 0,
