@@ -254,9 +254,13 @@ function createSphereShape (geometry) {
  * @return {CANNON.Shape}
  */
 function createBoundingSphereShape (object, options) {
+  if (options.sphereRadius) {
+    return new CANNON.Sphere(options.sphereRadius);
+  }
   var geometry = getGeometry(object);
+  if (!geometry) return null;
   geometry.computeBoundingSphere();
-  return new CANNON.Sphere(options.sphereRadius || geometry.boundingSphere.radius);
+  return new CANNON.Sphere(geometry.boundingSphere.radius);
 }
 
 /**
