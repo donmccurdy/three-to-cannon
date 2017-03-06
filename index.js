@@ -94,11 +94,10 @@ CANNON.mesh2shape.Type = Type;
  * @return {CANNON.Shape}
  */
 function createBoundingBoxShape (object) {
-  var box, shape, localPosition, worldPosition,
-      helper = new THREE.BoundingBoxHelper(object);
+  var shape, localPosition, worldPosition,
+      box = new THREE.Box3();
 
-  helper.update();
-  box = helper.box;
+  box.setFromObject(object);
 
   if (!isFinite(box.min.lengthSq())) return null;
 
@@ -111,7 +110,7 @@ function createBoundingBoxShape (object) {
   object.updateMatrixWorld();
   worldPosition = new THREE.Vector3();
   worldPosition.setFromMatrixPosition(object.matrixWorld);
-  localPosition = helper.position.sub(worldPosition);
+  localPosition = box.translate(worldPosition.negate()).getCenter();
   if (localPosition.lengthSq()) {
     shape.offset = localPosition;
   }
