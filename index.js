@@ -7,10 +7,9 @@ var Type = {
   BOX: 'Box',
   CYLINDER: 'Cylinder',
   SPHERE: 'Sphere',
-  HULL: 'ConvexPolyhedron'
+  HULL: 'ConvexPolyhedron',
+  MESH: 'Trimesh'
 };
-
-// TEST TEST TEST TEST
 
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
@@ -20,6 +19,8 @@ var Type = {
 module.exports = CANNON.mesh2shape = function (object, options) {
   options = options || {};
 
+  var geometry;
+
   if (options.type === Type.BOX) {
     return createBoundingBoxShape(object);
   } else if (options.type === Type.CYLINDER) {
@@ -28,12 +29,14 @@ module.exports = CANNON.mesh2shape = function (object, options) {
     return createBoundingSphereShape(object, options);
   } else if (options.type === Type.HULL) {
     return createConvexPolyhedron(object);
+  } else if (options.type === Type.MESH) {
+    geometry = getGeometry(object);
+    return geometry ? createTrimeshShape(geometry) : null;
   } else if (options.type) {
     throw new Error('[CANNON.mesh2shape] Invalid type "%s".', options.type);
   }
 
-  var geometry = getGeometry(object);
-
+  geometry = getGeometry(object);
   if (!geometry) return null;
 
   var type = geometry.metadata
@@ -54,10 +57,9 @@ module.exports = CANNON.mesh2shape = function (object, options) {
     case 'SphereBufferGeometry':
       return createSphereShape(geometry);
     case 'TubeGeometry':
-      return createTubeShape(geometry);
     case 'Geometry':
     case 'BufferGeometry':
-      return createTrimeshShape(geometry);
+      return createBoundingBoxShape(object);
     default:
       console.warn('Unrecognized geometry: "%s". Using bounding box as shape.', geometry.type);
       return createBoxShape(geometry);
@@ -189,18 +191,20 @@ function createCylinderShape (geometry) {
  */
 function createBoundingCylinderShape (object, options) {
   var shape, height, radius,
-      geometry = getGeometry(object),
+      box = new THREE.Box3(),
       axes = ['x', 'y', 'z'],
       majorAxis = options.cylinderAxis || 'y',
       minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
 
+  box.setFromObject(object);
+
+  if (!isFinite(box.min.lengthSq())) return null;
+
   // Compute cylinder dimensions.
-  geometry.computeBoundingBox();
-  geometry.computeBoundingSphere();
-  height = geometry.boundingBox.max[majorAxis] - geometry.boundingBox.min[majorAxis];
+  height = box.max[majorAxis] - box.min[majorAxis];
   radius = 0.5 * Math.max(
-    geometry.boundingBox.max[minorAxes[0]] - geometry.boundingBox.min[minorAxes[0]],
-    geometry.boundingBox.max[minorAxes[1]] - geometry.boundingBox.min[minorAxes[1]]
+    box.max[minorAxes[0]] - box.min[minorAxes[0]],
+    box.max[minorAxes[1]] - box.min[minorAxes[1]]
   );
 
   // Create shape.
@@ -260,16 +264,6 @@ function createBoundingSphereShape (object, options) {
   if (!geometry) return null;
   geometry.computeBoundingSphere();
   return new CANNON.Sphere(geometry.boundingSphere.radius);
-}
-
-/**
- * @param  {THREE.Geometry} geometry
- * @return {CANNON.Shape}
- */
-function createTubeShape (geometry) {
-  var tmp = new THREE.BufferGeometry();
-  tmp.fromGeometry(geometry);
-  return createTrimeshShape(tmp);
 }
 
 /**
