@@ -303,7 +303,13 @@ function getGeometry (object) {
     var position = new THREE.Vector3(),
         quaternion = new THREE.Quaternion(),
         scale = new THREE.Vector3();
-    tmp = meshes[0].geometry.clone();
+    if (meshes[0].geometry instanceof THREE.BufferGeometry) {
+      if (meshes[0].geometry.attributes.position) {
+        tmp.fromBufferGeometry(meshes[0].geometry);
+      }
+    } else {
+      tmp = meshes[0].geometry.clone();
+    }
     tmp.metadata = meshes[0].geometry.metadata;
     meshes[0].updateMatrixWorld();
     meshes[0].matrixWorld.decompose(position, quaternion, scale);
