@@ -9,7 +9,7 @@ npm install --save three-to-cannon
 ```
 
 ```
-mesh2shape = require('three-to-cannon');
+var mesh2shape = require('three-to-cannon').mesh2shape;
 
 // Automatic.
 var shape = mesh2shape(object3D);
