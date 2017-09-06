@@ -16,7 +16,7 @@ var Type = {
  * @param  {THREE.Object3D} object
  * @return {CANNON.Shape}
  */
-module.exports = CANNON.mesh2shape = function (object, options) {
+CANNON.mesh2shape = function (object, options) {
   options = options || {};
 
   var geometry;
@@ -65,6 +65,7 @@ module.exports = CANNON.mesh2shape = function (object, options) {
       return createBoxShape(geometry);
   }
 };
+module.exports.mesh2shape = CANNON.mesh2shape;
 
 CANNON.mesh2shape.Type = Type;
 
@@ -89,6 +90,7 @@ CANNON.mesh2shape.Type = Type;
      (box.max.z - box.min.z) / 2
    ));
  }
+module.exports.createBoxShape = createBoxShape;
 
 /**
  * Bounding box needs to be computed with the entire mesh, not just geometry.
@@ -119,6 +121,7 @@ function createBoundingBoxShape (object) {
 
   return shape;
 }
+module.exports.createBoundingBoxShape = createBoundingBoxShape;
 
 /**
  * Computes 3D convex hull as a CANNON.ConvexPolyhedron.
@@ -156,6 +159,7 @@ function createConvexPolyhedron (object) {
 
   return new CANNON.ConvexPolyhedron(vertices, faces);
 }
+module.exports.createConvexPolyhedron = createConvexPolyhedron;
 
 /**
  * @param  {THREE.Geometry} geometry
@@ -184,6 +188,7 @@ function createCylinderShape (geometry) {
   shape.orientation.setFromEuler(THREE.Math.degToRad(-90), 0, 0, 'XYZ').normalize();
   return shape;
 }
+module.exports.createCylinderShape = createCylinderShape;
 
 /**
  * @param  {THREE.Object3D} object
@@ -226,6 +231,7 @@ function createBoundingCylinderShape (object, options) {
   ).normalize();
   return shape;
 }
+module.exports.createBoundingCylinderShape = createBoundingCylinderShape;
 
 /**
  * @param  {THREE.Geometry} geometry
@@ -240,6 +246,7 @@ function createPlaneShape (geometry) {
     (box.max.z - box.min.z) / 2 || 0.1
   ));
 }
+module.exports.createPlaneShape = createPlaneShape;
 
 /**
  * @param  {THREE.Geometry} geometry
@@ -251,6 +258,7 @@ function createSphereShape (geometry) {
     : geometry.parameters;
   return new CANNON.Sphere(params.radius);
 }
+module.exports.createSphereShape = createSphereShape;
 
 /**
  * @param  {THREE.Object3D} object
@@ -265,6 +273,7 @@ function createBoundingSphereShape (object, options) {
   geometry.computeBoundingSphere();
   return new CANNON.Sphere(geometry.boundingSphere.radius);
 }
+module.exports.createBoundingSphereShape = createBoundingSphereShape;
 
 /**
  * @param  {THREE.Geometry} geometry
@@ -279,6 +288,7 @@ function createTrimeshShape (geometry) {
   indices = Object.keys(vertices).map(Number);
   return new CANNON.Trimesh(vertices, indices);
 }
+module.exports.createTrimeshShape = createTrimeshShape;
 
 /******************************************************************************
  * Utils
