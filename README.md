@@ -15,11 +15,17 @@ mesh2shape = require('three-to-cannon');
 var shape = mesh2shape(object3D);
 
 // Bounding box (AABB).
-var shape = mesh2shape(object3D, {type: mesh2shape.BOX});
+var shape = mesh2shape(object3D, {type: mesh2shape.Type.BOX});
+
+// Bounding sphere.
+var shape = mesh2shape(object3D, {type: mesh2shape.Type.SPHERE});
+
+// Cylinder.
+var shape = mesh2shape(object3D, {type: mesh2shape.Type.CYLINDER});
 
 // Convex hull.
-var shape = mesh2shape(object3D, {type: mesh2shape.HULL});
+var shape = mesh2shape(object3D, {type: mesh2shape.Type.HULL});
 
 // Mesh (not recommended).
-var shape = mesh2shape(object3D, {type: mesh2shape.MESH});
+var shape = mesh2shape(object3D, {type: mesh2shape.Type.MESH});
 ```
