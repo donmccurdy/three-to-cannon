@@ -1,6 +1,6 @@
 {
   "name": "three-to-cannon",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
   "main": "index.js",
   "scripts": {
