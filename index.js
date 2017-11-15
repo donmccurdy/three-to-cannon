@@ -304,7 +304,8 @@ function getGeometry (object) {
         quaternion = new THREE.Quaternion(),
         scale = new THREE.Vector3();
     if (meshes[0].geometry.isBufferGeometry) {
-      if (meshes[0].geometry.attributes.position) {
+      if (meshes[0].geometry.attributes.position
+          && meshes[0].geometry.attributes.position.itemSize > 2) {
         tmp.fromBufferGeometry(meshes[0].geometry);
       }
     } else {
@@ -320,8 +321,11 @@ function getGeometry (object) {
   while ((mesh = meshes.pop())) {
     mesh.updateMatrixWorld();
     if (mesh.geometry.isBufferGeometry) {
-      tmp.fromBufferGeometry(mesh.geometry);
-      combined.merge(tmp, mesh.matrixWorld);
+      if (meshes[0].geometry.attributes.position
+          && meshes[0].geometry.attributes.position.itemSize > 2) {
+        tmp.fromBufferGeometry(mesh.geometry);
+        combined.merge(tmp, mesh.matrixWorld);
+      }
     } else {
       combined.merge(mesh.geometry, mesh.matrixWorld);
     }
