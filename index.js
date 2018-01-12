@@ -321,10 +321,12 @@ function getGeometry (object) {
   while ((mesh = meshes.pop())) {
     mesh.updateMatrixWorld();
     if (mesh.geometry.isBufferGeometry) {
-      if (meshes[0].geometry.attributes.position
-          && meshes[0].geometry.attributes.position.itemSize > 2) {
-        tmp.fromBufferGeometry(mesh.geometry);
-        combined.merge(tmp, mesh.matrixWorld);
+      if (mesh.geometry.attributes.position
+          && mesh.geometry.attributes.position.itemSize > 2) {
+        var tmpGeom = new THREE.Geometry();
+        tmpGeom.fromBufferGeometry(mesh.geometry);
+        combined.merge(tmpGeom, mesh.matrixWorld);
+        tmpGeom.dispose();
       }
     } else {
       combined.merge(mesh.geometry, mesh.matrixWorld);
