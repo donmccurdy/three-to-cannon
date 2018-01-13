@@ -16,7 +16,7 @@ var Type = {
  * @param  {THREE.Object3D} object
  * @return {CANNON.Shape}
  */
-module.exports = CANNON.mesh2shape = function (object, options) {
+var mesh2shape = function (object, options) {
   options = options || {};
 
   var geometry;
@@ -66,7 +66,9 @@ module.exports = CANNON.mesh2shape = function (object, options) {
   }
 };
 
-CANNON.mesh2shape.Type = Type;
+mesh2shape.Type = Type;
+
+module.exports = CANNON.mesh2shape = mesh2shape;
 
 /******************************************************************************
  * Shape construction

@@ -4,7 +4,8 @@
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test/index.js",
+    "preversion": "npm run test",
     "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
@@ -27,5 +28,9 @@
   "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
   "peerDependencies": {
     "cannon": "github:donmccurdy/cannon.js#v0.6.2-dev1"
+  },
+  "devDependencies": {
+    "cannon": "github:donmccurdy/cannon.js#v0.6.2-dev1",
+    "three": "^0.89.0"
   }
 }
