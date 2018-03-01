@@ -101,7 +101,11 @@ function createBoundingBoxShape (object) {
   var shape, localPosition, worldPosition,
       box = new THREE.Box3();
 
-  box.setFromObject(object);
+  var clone = object.clone();
+  clone.quaternion.set(0, 0, 0, 1);
+  clone.updateMatrixWorld();
+
+  box.setFromObject(clone);
 
   if (!isFinite(box.min.lengthSq())) return null;
 
@@ -111,10 +115,7 @@ function createBoundingBoxShape (object) {
     (box.max.z - box.min.z) / 2
   ));
 
-  object.updateMatrixWorld();
-  worldPosition = new THREE.Vector3();
-  worldPosition.setFromMatrixPosition(object.matrixWorld);
-  localPosition = box.translate(worldPosition.negate()).getCenter();
+  localPosition = box.translate(clone.position.negate()).getCenter();
   if (localPosition.lengthSq()) {
     shape.offset = localPosition;
   }
