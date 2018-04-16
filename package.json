@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "cannon": "github:donmccurdy/cannon.js#v0.6.2-dev1",
+    "tape": "^4.9.0",
     "three": "^0.89.0"
   }
 }

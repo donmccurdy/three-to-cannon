@@ -1,12 +1,8 @@
-const assert = require('assert');
+const test = require('tape');
 const THREE = global.THREE = require('three');
 const mesh2shape = require('../');
 
-function equalsApprox ( a, b ) {
-  return Math.abs( a - b ) < 0.0001;
-}
-
-var ShapeType = {
+const ShapeType = {
   BOX: 4,
   SPHERE: 1,
   CYLINDER: 16,
@@ -14,33 +10,83 @@ var ShapeType = {
   MESH: 256
 };
 
-var object = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
+const object = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
 
+function equalsApprox ( a, b ) {
+  return Math.abs( a - b ) < 0.0001;
+}
 
-var box = mesh2shape(object, {type: mesh2shape.Type.BOX});
-assert( box.type === ShapeType.BOX, 'box.type' );
-assert( box.halfExtents.x === 5, 'box.halfExtents.x' );
-assert( box.halfExtents.y === 5, 'box.halfExtents.y' );
-assert( box.halfExtents.z === 5, 'box.halfExtents.z' );
+test('shape - box', function (t) {
+  var box = mesh2shape(object, {type: mesh2shape.Type.BOX});
 
-var sphere = mesh2shape(object, {type: mesh2shape.Type.SPHERE});
-assert( sphere.type === ShapeType.SPHERE, 'sphere.type' );
-assert( equalsApprox( sphere.radius, 8.660254 ), 'sphere.radius' );
+  t.equal( box.type, ShapeType.BOX, 'box.type' );
+  t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
+  t.equal( box.halfExtents.y, 5, 'box.halfExtents.y' );
+  t.equal( box.halfExtents.z, 5, 'box.halfExtents.z' );
 
-var cylinder = mesh2shape(object, {type: mesh2shape.Type.CYLINDER});
-assert( cylinder.type === ShapeType.CYLINDER, 'cylinder.type' );
-assert( cylinder.radiusTop === 5, 'cylinder.radiusTop' );
-assert( cylinder.radiusBottom === 5, 'cylinder.radiusBottom' );
-assert( cylinder.height === 10, 'cylinder.height' );
-assert( equalsApprox( cylinder.orientation.x, 0.707106 ), 'cylinder.orientation.x' );
-assert( equalsApprox( cylinder.orientation.y, 0 ), 'cylinder.orientation.y' );
-assert( equalsApprox( cylinder.orientation.z, 0 ), 'cylinder.orientation.z' );
-assert( equalsApprox( cylinder.orientation.w, 0.707106 ), 'cylinder.orientation.w' );
+  t.end();
+});
 
-var hull = mesh2shape(object, {type: mesh2shape.Type.HULL});
-assert( hull.type === ShapeType.HULL, 'hull.type' );
+test('shape - sphere', function (t) {
+  const sphere = mesh2shape(object, {type: mesh2shape.Type.SPHERE});
 
-var mesh = mesh2shape(object, {type: mesh2shape.Type.MESH});
-assert( mesh.type === ShapeType.MESH, 'mesh.type' );
+  t.equal( sphere.type, ShapeType.SPHERE, 'sphere.type' );
+  t.ok( equalsApprox( sphere.radius, 8.660254 ), 'sphere.radius' );
 
-console.log('Passed.');
+  t.end();
+});
+
+test('shape - cylinder', function (t) {
+  const cylinder = mesh2shape(object, {type: mesh2shape.Type.CYLINDER});
+
+  t.equal( cylinder.type, ShapeType.CYLINDER, 'cylinder.type' );
+  t.equal( cylinder.radiusTop, 5, 'cylinder.radiusTop' );
+  t.equal( cylinder.radiusBottom, 5, 'cylinder.radiusBottom' );
+  t.equal( cylinder.height, 10, 'cylinder.height' );
+  t.ok( equalsApprox( cylinder.orientation.x, 0.707106 ), 'cylinder.orientation.x' );
+  t.ok( equalsApprox( cylinder.orientation.y, 0 ), 'cylinder.orientation.y' );
+  t.ok( equalsApprox( cylinder.orientation.z, 0 ), 'cylinder.orientation.z' );
+  t.ok( equalsApprox( cylinder.orientation.w, 0.707106 ), 'cylinder.orientation.w' );
+
+  t.end();
+});
+
+test('shape - hull', function (t) {
+  const hull = mesh2shape(object, {type: mesh2shape.Type.HULL});
+
+  t.equal( hull.type, ShapeType.HULL, 'hull.type' );
+
+  t.end();
+});
+
+test('shape - mesh', function (t) {
+  const mesh = mesh2shape(object, {type: mesh2shape.Type.MESH});
+
+  t.equal( mesh.type, ShapeType.MESH, 'mesh.type' );
+
+  t.end();
+});
+
+test('transform - position', function (t) {
+  const group = new THREE.Group();
+  const object = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
+  const matrix = new THREE.Matrix4().makeTranslation(0, 50, 0);
+  object.geometry.applyMatrix(matrix);
+  group.position.set(100, 0, 0);
+  group.add(object);
+  group.updateMatrixWorld();
+
+  const box = mesh2shape(object);
+
+  t.equal( box.type, ShapeType.BOX, 'box.type' );
+  t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
+  t.equal( box.halfExtents.y, 5, 'box.halfExtents.y' );
+  t.equal( box.halfExtents.z, 5, 'box.halfExtents.z' );
+  t.equal( box.offset.x, 0, 'box.offset.x' );
+  t.equal( box.offset.y, 50, 'box.offset.y' );
+  t.equal( box.offset.z, 0, 'box.offset.z' );
+  t.notOk( box.orientation, 'box.orientation' );
+
+  t.end();
+});
+
