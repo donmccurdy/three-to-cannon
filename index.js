@@ -98,7 +98,7 @@ module.exports = CANNON.mesh2shape = mesh2shape;
  * @return {CANNON.Shape}
  */
 function createBoundingBoxShape (object) {
-  var shape, localPosition, worldPosition,
+  var shape, localPosition,
       box = new THREE.Box3();
 
   var clone = object.clone();
