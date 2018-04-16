@@ -1,5 +1,7 @@
 # three-to-cannon
 
+[![Build Status](https://travis-ci.org/donmccurdy/three-to-cannon.svg?branch=master)](https://travis-ci.org/donmccurdy/three-to-cannon)
+
 Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplified shapes.
 
 ## Usage
