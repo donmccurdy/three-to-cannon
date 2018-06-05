@@ -115,7 +115,7 @@ function createBoundingBoxShape (object) {
     (box.max.z - box.min.z) / 2
   ));
 
-  localPosition = box.translate(clone.position.negate()).getCenter();
+  localPosition = box.translate(clone.position.negate()).getCenter(new THREE.Vector3());
   if (localPosition.lengthSq()) {
     shape.offset = localPosition;
   }
