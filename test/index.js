@@ -79,14 +79,63 @@ test('transform - position', function (t) {
   const box = mesh2shape(object);
 
   t.equal( box.type, ShapeType.BOX, 'box.type' );
-  t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
-  t.equal( box.halfExtents.y, 5, 'box.halfExtents.y' );
-  t.equal( box.halfExtents.z, 5, 'box.halfExtents.z' );
-  t.equal( box.offset.x, 0, 'box.offset.x' );
-  t.equal( box.offset.y, 50, 'box.offset.y' );
-  t.equal( box.offset.z, 0, 'box.offset.z' );
+  t.ok( equalsApprox(box.halfExtents.x, 5), 'box.halfExtents.x' );
+  t.ok( equalsApprox(box.halfExtents.y, 5), 'box.halfExtents.y' );
+  t.ok( equalsApprox(box.halfExtents.z, 5), 'box.halfExtents.z' );
+  t.ok( equalsApprox(box.offset.x, 0), 'box.offset.x' );
+  t.ok( equalsApprox(box.offset.y, 50), 'box.offset.y' );
+  t.ok( equalsApprox(box.offset.z, 0), 'box.offset.z' );
   t.notOk( box.orientation, 'box.orientation' );
 
   t.end();
 });
 
+test('transform - position and scale', function (t) {
+  const parent = new THREE.Group();
+  const child = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
+  const translation = new THREE.Matrix4().makeTranslation(0, 50, 0);
+  child.geometry.applyMatrix(translation);
+  parent.position.set(100, 0, 0);
+  parent.scale.set(100, 100, 50);
+  parent.add(child);
+  parent.updateMatrixWorld();
+
+  const box = mesh2shape(child);
+
+  t.equal( box.type, ShapeType.BOX, 'box.type' );
+  t.ok( equalsApprox(box.halfExtents.x, 500), 'box.halfExtents.x' );
+  t.ok( equalsApprox(box.halfExtents.y, 500), 'box.halfExtents.y' );
+  t.ok( equalsApprox(box.halfExtents.z, 250), 'box.halfExtents.z' );
+  t.ok( equalsApprox(box.offset.x, 0), 'box.offset.x' );
+  t.ok( equalsApprox(box.offset.y, 5000), 'box.offset.y' );
+  t.ok( equalsApprox(box.offset.z, 0), 'box.offset.z' );
+
+  t.end();
+});
+
+test('transform - position and rotation', function (t) {
+  const group = new THREE.Group();
+  const object = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
+  const matrix = new THREE.Matrix4().makeTranslation(0, 50, 0);
+  const rotation = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0,1,0), Math.PI/2);
+  const rotation2 = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1,0,0), Math.PI/2);
+  group.applyMatrix(rotation);
+  object.applyMatrix(rotation2);
+  object.geometry.applyMatrix(matrix);
+  group.position.set(100, 0, 0);
+  group.add(object);
+  group.updateMatrixWorld();
+
+  const box = mesh2shape(object);
+
+  t.equal( box.type, ShapeType.BOX, 'box.type' );
+  t.ok( equalsApprox(box.halfExtents.x, 5), 'box.halfExtents.x' );
+  t.ok( equalsApprox(box.halfExtents.y, 5), 'box.halfExtents.y' );
+  t.ok( equalsApprox(box.halfExtents.z, 5), 'box.halfExtents.z' );
+  t.ok( equalsApprox(box.offset.x, 0), 'box.offset.x' );
+  t.ok( equalsApprox(box.offset.y, 50), 'box.offset.y' );
+  t.ok( equalsApprox(box.offset.z, 0), 'box.offset.z' );
+  t.notOk( box.orientation, 'box.orientation' );
+
+  t.end();
+});
