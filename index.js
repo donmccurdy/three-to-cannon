@@ -98,16 +98,19 @@ module.exports = CANNON.mesh2shape = mesh2shape;
  * @return {CANNON.Shape}
  */
 function createBoundingBoxShape (object) {
-  var shape, localPosition,
-      box = new THREE.Box3();
+  var shape, box = new THREE.Box3(),
+      position = new THREE.Vector3(),
+      scale = new THREE.Vector3(),
+      offset = new THREE.Vector3(),
+      quaternion = object.quaternion.clone();
 
-  var clone = object.clone();
-  clone.quaternion.set(0, 0, 0, 1);
-  clone.updateMatrixWorld();
+  object.quaternion.set(0,0,0,1);
+  box.setFromObject(object);
 
-  box.setFromObject(clone);
-
-  if (!isFinite(box.min.lengthSq())) return null;
+  if (!isFinite(box.min.lengthSq())) {
+    object.quaternion.copy(quaternion);
+    return null;
+  }
 
   shape = new CANNON.Box(new CANNON.Vec3(
     (box.max.x - box.min.x) / 2,
@@ -115,11 +118,15 @@ function createBoundingBoxShape (object) {
     (box.max.z - box.min.z) / 2
   ));
 
-  localPosition = box.translate(clone.position.negate()).getCenter(new THREE.Vector3());
-  if (localPosition.lengthSq()) {
-    shape.offset = localPosition;
+  object.getWorldPosition(position);
+  object.getWorldScale(scale);
+  box.translate(position.negate()).getCenter(offset);
+
+  if (offset.lengthSq()) {
+    shape.offset = offset;
   }
 
+  object.quaternion.copy(quaternion);
   return shape;
 }
 
