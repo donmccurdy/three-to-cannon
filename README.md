@@ -6,28 +6,40 @@ Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplifi
 
 ## Usage
 
-```javascript
+Installation:
+
+```js
 npm install --save three-to-cannon
 ```
 
-```
-mesh2shape = require('three-to-cannon');
+Import:
 
+```js
+// ES6
+import { threeToCannon } from 'three-to-cannon';
+
+// CommonJS
+threeToCannon = require('three-to-cannon').threeToCannon;
+```
+
+Use:
+
+```js
 // Automatic.
-var shape = mesh2shape(object3D);
+const shape = threeToCannon(object3D);
 
 // Bounding box (AABB).
-var shape = mesh2shape(object3D, {type: mesh2shape.Type.BOX});
+const shape = threeToCannon(object3D, {type: threeToCannon.Type.BOX});
 
 // Bounding sphere.
-var shape = mesh2shape(object3D, {type: mesh2shape.Type.SPHERE});
+const shape = threeToCannon(object3D, {type: threeToCannon.Type.SPHERE});
 
 // Cylinder.
-var shape = mesh2shape(object3D, {type: mesh2shape.Type.CYLINDER});
+const shape = threeToCannon(object3D, {type: threeToCannon.Type.CYLINDER});
 
 // Convex hull.
-var shape = mesh2shape(object3D, {type: mesh2shape.Type.HULL});
+const shape = threeToCannon(object3D, {type: threeToCannon.Type.HULL});
 
 // Mesh (not recommended).
-var shape = mesh2shape(object3D, {type: mesh2shape.Type.MESH});
+const shape = threeToCannon(object3D, {type: threeToCannon.Type.MESH});
 ```

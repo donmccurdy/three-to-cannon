@@ -1,6 +1,6 @@
 const test = require('tape');
 const THREE = global.THREE = require('three');
-const mesh2shape = require('../');
+const threeToCannon = require('../').threeToCannon;
 
 const ShapeType = {
   BOX: 4,
@@ -17,7 +17,7 @@ function equalsApprox ( a, b ) {
 }
 
 test('shape - box', function (t) {
-  var box = mesh2shape(object, {type: mesh2shape.Type.BOX});
+  var box = threeToCannon(object, {type: threeToCannon.Type.BOX});
 
   t.equal( box.type, ShapeType.BOX, 'box.type' );
   t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
@@ -28,7 +28,7 @@ test('shape - box', function (t) {
 });
 
 test('shape - sphere', function (t) {
-  const sphere = mesh2shape(object, {type: mesh2shape.Type.SPHERE});
+  const sphere = threeToCannon(object, {type: threeToCannon.Type.SPHERE});
 
   t.equal( sphere.type, ShapeType.SPHERE, 'sphere.type' );
   t.ok( equalsApprox( sphere.radius, 8.660254 ), 'sphere.radius' );
@@ -37,7 +37,7 @@ test('shape - sphere', function (t) {
 });
 
 test('shape - cylinder', function (t) {
-  const cylinder = mesh2shape(object, {type: mesh2shape.Type.CYLINDER});
+  const cylinder = threeToCannon(object, {type: threeToCannon.Type.CYLINDER});
 
   t.equal( cylinder.type, ShapeType.CYLINDER, 'cylinder.type' );
   t.equal( cylinder.radiusTop, 5, 'cylinder.radiusTop' );
@@ -52,7 +52,7 @@ test('shape - cylinder', function (t) {
 });
 
 test('shape - hull', function (t) {
-  const hull = mesh2shape(object, {type: mesh2shape.Type.HULL});
+  const hull = threeToCannon(object, {type: threeToCannon.Type.HULL});
 
   t.equal( hull.type, ShapeType.HULL, 'hull.type' );
 
@@ -60,7 +60,7 @@ test('shape - hull', function (t) {
 });
 
 test('shape - mesh', function (t) {
-  const mesh = mesh2shape(object, {type: mesh2shape.Type.MESH});
+  const mesh = threeToCannon(object, {type: threeToCannon.Type.MESH});
 
   t.equal( mesh.type, ShapeType.MESH, 'mesh.type' );
 
@@ -76,7 +76,7 @@ test('transform - position', function (t) {
   group.add(object);
   group.updateMatrixWorld();
 
-  const box = mesh2shape(object);
+  const box = threeToCannon(object);
 
   t.equal( box.type, ShapeType.BOX, 'box.type' );
   t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );

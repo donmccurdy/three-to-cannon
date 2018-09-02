@@ -1,5 +1,5 @@
-var CANNON = require('cannon'),
-    quickhull = require('./lib/THREE.quickhull');
+import * as CANNON from 'cannon';
+import { quickhull } from './lib/THREE.quickhull';
 
 var PI_2 = Math.PI / 2;
 
@@ -16,7 +16,7 @@ var Type = {
  * @param  {THREE.Object3D} object
  * @return {CANNON.Shape}
  */
-var mesh2shape = function (object, options) {
+export const threeToCannon = function (object, options) {
   options = options || {};
 
   var geometry;
@@ -33,7 +33,7 @@ var mesh2shape = function (object, options) {
     geometry = getGeometry(object);
     return geometry ? createTrimeshShape(geometry) : null;
   } else if (options.type) {
-    throw new Error('[CANNON.mesh2shape] Invalid type "%s".', options.type);
+    throw new Error('[CANNON.threeToCannon] Invalid type "%s".', options.type);
   }
 
   geometry = getGeometry(object);
@@ -66,9 +66,7 @@ var mesh2shape = function (object, options) {
   }
 };
 
-mesh2shape.Type = Type;
-
-module.exports = CANNON.mesh2shape = mesh2shape;
+threeToCannon.Type = Type;
 
 /******************************************************************************
  * Shape construction

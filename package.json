@@ -2,10 +2,14 @@
   "name": "three-to-cannon",
   "version": "1.4.1",
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
-  "main": "index.js",
+  "main": "dist/three-pathfinding.js",
+  "module": "dist/three-pathfinding.module.js",
+  "source": "index.js",
   "scripts": {
     "test": "node test/index.js",
     "preversion": "npm run test",
+    "dist": "microbundle --target browser",
+    "version": "npm run dist && git add -A dist",
     "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
@@ -31,6 +35,7 @@
   },
   "devDependencies": {
     "cannon": "github:donmccurdy/cannon.js#v0.6.2-dev1",
+    "microbundle": "^0.6.0",
     "tape": "^4.9.0",
     "three": "^0.89.0"
   }
