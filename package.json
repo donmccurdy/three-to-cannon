@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
   "peerDependencies": {
-    "cannon": "github:donmccurdy/cannon.js#v0.6.2-dev1"
+    "cannon-es": "0.8.8"
   },
   "devDependencies": {
-    "cannon": "github:donmccurdy/cannon.js#v0.6.2-dev1",
-    "microbundle": "^0.6.0",
+    "cannon-es": "0.8.8",
+    "microbundle": "^0.11.0",
     "tape": "^4.9.0",
-    "three": "^0.89.0"
+    "three": "^0.115.0"
   }
 }

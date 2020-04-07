@@ -1,4 +1,4 @@
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import { quickhull } from './lib/THREE.quickhull';
 
 var PI_2 = Math.PI / 2;
