@@ -1,3 +1,7 @@
+// See https://github.com/react-spring/cannon-es/issues/23.
+const {performance} = require('perf_hooks');
+global.performance = performance;
+
 const test = require('tape');
 const THREE = global.THREE = require('three');
 const threeToCannon = require('../').threeToCannon;
