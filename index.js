@@ -1,4 +1,4 @@
-import * as CANNON from 'cannon-es';
+import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Quaternion, Trimesh, Vec3 } from 'cannon-es';
 import { quickhull } from './lib/THREE.quickhull';
 
 var PI_2 = Math.PI / 2;
@@ -83,7 +83,7 @@ threeToCannon.Type = Type;
 
    geometry.computeBoundingBox();
    var box = geometry.boundingBox;
-   return new CANNON.Box(new CANNON.Vec3(
+   return new Box(new Vec3(
      (box.max.x - box.min.x) / 2,
      (box.max.y - box.min.y) / 2,
      (box.max.z - box.min.z) / 2
@@ -107,7 +107,7 @@ function createBoundingBoxShape (object) {
 
   if (!isFinite(box.min.lengthSq())) return null;
 
-  shape = new CANNON.Box(new CANNON.Vec3(
+  shape = new Box(new Vec3(
     (box.max.x - box.min.x) / 2,
     (box.max.y - box.min.y) / 2,
     (box.max.z - box.min.z) / 2
@@ -143,10 +143,10 @@ function createConvexPolyhedron (object) {
   // Compute the 3D convex hull.
   hull = quickhull(geometry);
 
-  // Convert from THREE.Vector3 to CANNON.Vec3.
+  // Convert from THREE.Vector3 to Vec3.
   vertices = new Array(hull.vertices.length);
   for (i = 0; i < hull.vertices.length; i++) {
-    vertices[i] = new CANNON.Vec3(hull.vertices[i].x, hull.vertices[i].y, hull.vertices[i].z);
+    vertices[i] = new Vec3(hull.vertices[i].x, hull.vertices[i].y, hull.vertices[i].z);
   }
 
   // Convert from THREE.Face to Array<number>.
@@ -155,7 +155,7 @@ function createConvexPolyhedron (object) {
     faces[i] = [hull.faces[i].a, hull.faces[i].b, hull.faces[i].c];
   }
 
-  return new CANNON.ConvexPolyhedron(vertices, faces);
+  return new ConvexPolyhedron(vertices, faces);
 }
 
 /**
@@ -167,7 +167,7 @@ function createCylinderShape (geometry) {
       params = geometry.metadata
         ? geometry.metadata.parameters
         : geometry.parameters;
-  shape = new CANNON.Cylinder(
+  shape = new Cylinder(
     params.radiusTop,
     params.radiusBottom,
     params.height,
@@ -175,13 +175,13 @@ function createCylinderShape (geometry) {
   );
 
   // Include metadata for serialization.
-  shape._type = CANNON.Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
+  shape._type = Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
   shape.radiusTop = params.radiusTop;
   shape.radiusBottom = params.radiusBottom;
   shape.height = params.height;
   shape.numSegments = params.radialSegments;
 
-  shape.orientation = new CANNON.Quaternion();
+  shape.orientation = new Quaternion();
   shape.orientation.setFromEuler(THREE.Math.degToRad(90), 0, 0, 'XYZ').normalize();
   return shape;
 }
@@ -209,16 +209,16 @@ function createBoundingCylinderShape (object, options) {
   );
 
   // Create shape.
-  shape = new CANNON.Cylinder(radius, radius, height, 12);
+  shape = new Cylinder(radius, radius, height, 12);
 
   // Include metadata for serialization.
-  shape._type = CANNON.Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
+  shape._type = Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
   shape.radiusTop = radius;
   shape.radiusBottom = radius;
   shape.height = height;
   shape.numSegments = 12;
 
-  shape.orientation = new CANNON.Quaternion();
+  shape.orientation = new Quaternion();
   shape.orientation.setFromEuler(
     majorAxis === 'y' ? PI_2 : 0,
     majorAxis === 'z' ? PI_2 : 0,
@@ -235,7 +235,7 @@ function createBoundingCylinderShape (object, options) {
 function createPlaneShape (geometry) {
   geometry.computeBoundingBox();
   var box = geometry.boundingBox;
-  return new CANNON.Box(new CANNON.Vec3(
+  return new Box(new Vec3(
     (box.max.x - box.min.x) / 2 || 0.1,
     (box.max.y - box.min.y) / 2 || 0.1,
     (box.max.z - box.min.z) / 2 || 0.1
@@ -250,7 +250,7 @@ function createSphereShape (geometry) {
   var params = geometry.metadata
     ? geometry.metadata.parameters
     : geometry.parameters;
-  return new CANNON.Sphere(params.radius);
+  return new Sphere(params.radius);
 }
 
 /**
@@ -259,12 +259,12 @@ function createSphereShape (geometry) {
  */
 function createBoundingSphereShape (object, options) {
   if (options.sphereRadius) {
-    return new CANNON.Sphere(options.sphereRadius);
+    return new Sphere(options.sphereRadius);
   }
   var geometry = getGeometry(object);
   if (!geometry) return null;
   geometry.computeBoundingSphere();
-  return new CANNON.Sphere(geometry.boundingSphere.radius);
+  return new Sphere(geometry.boundingSphere.radius);
 }
 
 /**
@@ -278,7 +278,7 @@ function createTrimeshShape (geometry) {
   if (!vertices.length) return null;
 
   indices = Object.keys(vertices).map(Number);
-  return new CANNON.Trimesh(vertices, indices);
+  return new Trimesh(vertices, indices);
 }
 
 /******************************************************************************
