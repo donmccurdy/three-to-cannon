@@ -6,9 +6,9 @@
   "module": "dist/three-pathfinding.module.js",
   "source": "index.js",
   "scripts": {
-    "test": "node test/index.js",
+    "test": "tape test/index.js | tap-spec",
     "preversion": "npm run test",
-    "dist": "microbundle --target browser",
+    "dist": "microbundle",
     "version": "npm run dist && git add -A dist",
     "postversion": "git push && git push --tags && npm publish"
   },
@@ -31,11 +31,12 @@
   },
   "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
   "peerDependencies": {
-    "cannon-es": "^0.9.0"
+    "cannon-es": "^0.9.1"
   },
   "devDependencies": {
-    "cannon-es": "^0.9.0",
+    "cannon-es": "^0.9.1",
     "microbundle": "^0.11.0",
+    "tap-spec": "^5.0.0",
     "tape": "^4.9.0",
     "three": "^0.115.0"
   }
