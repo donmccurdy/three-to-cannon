@@ -10,7 +10,8 @@
     "preversion": "npm run test",
     "dev": "microbundle watch --globals three=THREE --external three",
     "dist": "microbundle --globals three=THREE --external three",
-    "version": "npm run dist && git add -A dist",
+    "preversion": "npm run dist && npm test",
+    "version": "git add -A dist",
     "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
