@@ -1,16 +1,15 @@
 {
   "name": "three-to-cannon",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
   "main": "dist/three-to-cannon.js",
   "module": "dist/three-to-cannon.module.js",
   "source": "index.js",
   "scripts": {
     "test": "tape test/index.js | tap-spec",
-    "preversion": "npm run test",
+    "preversion": "npm run dist && npm test",
     "dev": "microbundle watch --globals three=THREE --external three",
     "dist": "microbundle --globals three=THREE --external three",
-    "preversion": "npm run dist && npm test",
     "version": "git add -A dist",
     "postversion": "git push && git push --tags && npm publish"
   },
