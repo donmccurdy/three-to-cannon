@@ -1,5 +1,6 @@
-import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Quaternion, Trimesh, Vec3 } from 'cannon-es';
-import { quickhull } from './lib/THREE.quickhull';
+import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Quaternion as CQuaternion, Trimesh, Vec3 } from 'cannon-es';
+import { ConvexHull } from 'three/examples/jsm/math/ConvexHull.js';
+import { Box3, BufferGeometry, Geometry, Math as _Math, Matrix4, Mesh, Quaternion, Vector3 } from 'three';
 
 var PI_2 = Math.PI / 2;
 
@@ -97,7 +98,7 @@ threeToCannon.Type = Type;
  */
 function createBoundingBoxShape (object) {
   var shape, localPosition,
-      box = new THREE.Box3();
+      box = new Box3();
 
   var clone = object.clone();
   clone.quaternion.set(0, 0, 0, 1);
@@ -113,7 +114,7 @@ function createBoundingBoxShape (object) {
     (box.max.z - box.min.z) / 2
   ));
 
-  localPosition = box.translate(clone.position.negate()).getCenter(new THREE.Vector3());
+  localPosition = box.translate(clone.position.negate()).getCenter(new Vector3());
   if (localPosition.lengthSq()) {
     shape.offset = localPosition;
   }
@@ -141,7 +142,7 @@ function createConvexPolyhedron (object) {
   }
 
   // Compute the 3D convex hull.
-  hull = quickhull(geometry);
+  hull = new ConvexHull.setFromObject(new Mesh(geometry));
 
   // Convert from THREE.Vector3 to Vec3.
   vertices = new Array(hull.vertices.length);
@@ -181,8 +182,8 @@ function createCylinderShape (geometry) {
   shape.height = params.height;
   shape.numSegments = params.radialSegments;
 
-  shape.orientation = new Quaternion();
-  shape.orientation.setFromEuler(THREE.Math.degToRad(90), 0, 0, 'XYZ').normalize();
+  shape.orientation = new CQuaternion();
+  shape.orientation.setFromEuler(_Math.degToRad(90), 0, 0, 'XYZ').normalize();
   return shape;
 }
 
@@ -192,7 +193,7 @@ function createCylinderShape (geometry) {
  */
 function createBoundingCylinderShape (object, options) {
   var shape, height, radius,
-      box = new THREE.Box3(),
+      box = new Box3(),
       axes = ['x', 'y', 'z'],
       majorAxis = options.cylinderAxis || 'y',
       minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
@@ -218,7 +219,7 @@ function createBoundingCylinderShape (object, options) {
   shape.height = height;
   shape.numSegments = 12;
 
-  shape.orientation = new Quaternion();
+  shape.orientation = new CQuaternion();
   shape.orientation.setFromEuler(
     majorAxis === 'y' ? PI_2 : 0,
     majorAxis === 'z' ? PI_2 : 0,
@@ -294,16 +295,16 @@ function createTrimeshShape (geometry) {
 function getGeometry (object) {
   var matrix, mesh,
       meshes = getMeshes(object),
-      tmp = new THREE.Geometry(),
-      combined = new THREE.Geometry();
+      tmp = new Geometry(),
+      combined = new Geometry();
 
   if (meshes.length === 0) return null;
 
   // Apply scale  – it can't easily be applied to a CANNON.Shape later.
   if (meshes.length === 1) {
-    var position = new THREE.Vector3(),
-        quaternion = new THREE.Quaternion(),
-        scale = new THREE.Vector3();
+    var position = new Vector3(),
+        quaternion = new Quaternion(),
+        scale = new Vector3();
     if (meshes[0].geometry.isBufferGeometry) {
       if (meshes[0].geometry.attributes.position
           && meshes[0].geometry.attributes.position.itemSize > 2) {
@@ -324,7 +325,7 @@ function getGeometry (object) {
     if (mesh.geometry.isBufferGeometry) {
       if (mesh.geometry.attributes.position
           && mesh.geometry.attributes.position.itemSize > 2) {
-        var tmpGeom = new THREE.Geometry();
+        var tmpGeom = new Geometry();
         tmpGeom.fromBufferGeometry(mesh.geometry);
         combined.merge(tmpGeom, mesh.matrixWorld);
         tmpGeom.dispose();
@@ -334,7 +335,7 @@ function getGeometry (object) {
     }
   }
 
-  matrix = new THREE.Matrix4();
+  matrix = new Matrix4();
   matrix.scale(object.scale);
   combined.applyMatrix(matrix);
   return combined;
@@ -346,7 +347,7 @@ function getGeometry (object) {
  */
 function getVertices (geometry) {
   if (!geometry.attributes) {
-    geometry = new THREE.BufferGeometry().fromGeometry(geometry);
+    geometry = new BufferGeometry().fromGeometry(geometry);
   }
   return (geometry.attributes.position || {}).array || [];
 }
