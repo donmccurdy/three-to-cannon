@@ -1,4 +1,7 @@
-// See https://github.com/react-spring/cannon-es/issues/23.
+// See: https://github.com/substack/tape/issues/514
+require = require('esm')(module);
+
+// See: https://github.com/react-spring/cannon-es/issues/23
 const {performance} = require('perf_hooks');
 global.performance = performance;
 
