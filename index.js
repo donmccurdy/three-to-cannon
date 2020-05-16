@@ -142,7 +142,7 @@ function createConvexPolyhedron (object) {
   }
 
   // Compute the 3D convex hull.
-  hull = new ConvexHull.setFromObject(new Mesh(geometry));
+  hull = new ConvexHull().setFromObject(new Mesh(geometry));
 
   // Convert from THREE.Vector3 to Vec3.
   vertices = new Array(hull.vertices.length);

@@ -8,6 +8,7 @@
   "scripts": {
     "test": "tape test/index.js | tap-spec",
     "preversion": "npm run test",
+    "dev": "microbundle watch --globals three=THREE --external three",
     "dist": "microbundle --globals three=THREE --external three",
     "version": "npm run dist && git add -A dist",
     "postversion": "git push && git push --tags && npm publish"
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "cannon-es": "^0.9.1",
+    "esm": "^3.2.25",
     "microbundle": "^0.12.0",
     "tap-spec": "^5.0.0",
     "tape": "^4.9.0",
