@@ -128,9 +128,9 @@ function createBoundingBoxShape (object) {
  * @return {CANNON.Shape}
  */
 function createConvexPolyhedron (object) {
-  var i, vertices, faces, hull,
-      eps = 1e-4,
-      geometry = getGeometry(object);
+  var i, vertices, faces, normals, hull,
+  eps = 1e-4,
+  geometry = getGeometry(object);
 
   if (!geometry || !geometry.vertices.length) return null;
 
@@ -143,20 +143,22 @@ function createConvexPolyhedron (object) {
 
   // Compute the 3D convex hull.
   hull = new ConvexHull().setFromObject(new Mesh(geometry));
+  faces = hull.faces;
 
-  // Convert from THREE.Vector3 to Vec3.
-  vertices = new Array(hull.vertices.length);
-  for (i = 0; i < hull.vertices.length; i++) {
-    vertices[i] = new Vec3(hull.vertices[i].x, hull.vertices[i].y, hull.vertices[i].z);
+  vertices = [];
+  normals = [];
+
+  for ( var i = 0; i < faces.length; i ++ ) {
+    var face = faces[ i ];
+    var edge = face.edge;
+    do {
+      var point = edge.head().point;
+      vertices.push( new Vec3(point.x, point.y, point.z) );
+      normals.push( new Vec3(face.normal.x, face.normal.y, face.normal.z) );
+      edge = edge.next;
+    } while ( edge !== face.edge );
   }
-
-  // Convert from THREE.Face to Array<number>.
-  faces = new Array(hull.faces.length);
-  for (i = 0; i < hull.faces.length; i++) {
-    faces[i] = [hull.faces[i].a, hull.faces[i].b, hull.faces[i].c];
-  }
-
-  return new ConvexPolyhedron(vertices, faces);
+  return new ConvexPolyhedron({vertices, normals});
 }
 
 /**
