@@ -62,6 +62,7 @@ test('shape - hull', function (t) {
   const hull = threeToCannon(object, {type: threeToCannon.Type.HULL});
 
   t.equal( hull.type, ShapeType.HULL, 'hull.type' );
+  t.equals( hull.boundingSphereRadius.toFixed( 3 ), '8.660', 'hull.boundingSphereRadius' );
 
   t.end();
 });
@@ -70,6 +71,7 @@ test('shape - mesh', function (t) {
   const mesh = threeToCannon(object, {type: threeToCannon.Type.MESH});
 
   t.equal( mesh.type, ShapeType.MESH, 'mesh.type' );
+  t.equals( mesh.boundingSphereRadius.toFixed( 3 ), '8.660', 'mesh.boundingSphereRadius' );
 
   t.end();
 });
