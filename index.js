@@ -97,24 +97,21 @@ threeToCannon.Type = Type;
  * @return {CANNON.Shape}
  */
 function createBoundingBoxShape (object) {
-  var shape, localPosition,
-      box = new Box3();
-
   var clone = object.clone();
   clone.quaternion.set(0, 0, 0, 1);
   clone.updateMatrixWorld();
 
-  box.setFromObject(clone);
+  var box = new Box3().setFromObject(clone);
 
   if (!isFinite(box.min.lengthSq())) return null;
 
-  shape = new Box(new Vec3(
+  var shape = new Box(new Vec3(
     (box.max.x - box.min.x) / 2,
     (box.max.y - box.min.y) / 2,
     (box.max.z - box.min.z) / 2
   ));
 
-  localPosition = box.translate(clone.position.negate()).getCenter(new Vector3());
+  var localPosition = box.translate(clone.position.negate()).getCenter(new Vector3());
   if (localPosition.lengthSq()) {
     shape.offset = localPosition;
   }
@@ -128,25 +125,23 @@ function createBoundingBoxShape (object) {
  * @return {CANNON.Shape}
  */
 function createConvexPolyhedron (object) {
-  var i, vertices, faces, normals, hull,
-  eps = 1e-4,
-  geometry = getGeometry(object);
+  var geometry = getGeometry(object);
 
   if (!geometry || !geometry.vertices.length) return null;
 
   // Perturb.
-  for (i = 0; i < geometry.vertices.length; i++) {
+  var eps = 1e-4;
+  for (var i = 0; i < geometry.vertices.length; i++) {
     geometry.vertices[i].x += (Math.random() - 0.5) * eps;
     geometry.vertices[i].y += (Math.random() - 0.5) * eps;
     geometry.vertices[i].z += (Math.random() - 0.5) * eps;
   }
 
   // Compute the 3D convex hull.
-  hull = new ConvexHull().setFromObject(new Mesh(geometry));
-  faces = hull.faces;
-
-  vertices = [];
-  normals = [];
+  var hull = new ConvexHull().setFromObject(new Mesh(geometry));
+  var faces = hull.faces;
+  var vertices = [];
+  var normals = [];
 
   for ( var i = 0; i < faces.length; i ++ ) {
     var face = faces[ i ];
@@ -158,6 +153,7 @@ function createConvexPolyhedron (object) {
       edge = edge.next;
     } while ( edge !== face.edge );
   }
+
   return new ConvexPolyhedron({vertices, normals});
 }
 
@@ -166,11 +162,11 @@ function createConvexPolyhedron (object) {
  * @return {CANNON.Shape}
  */
 function createCylinderShape (geometry) {
-  var shape,
-      params = geometry.metadata
-        ? geometry.metadata.parameters
-        : geometry.parameters;
-  shape = new Cylinder(
+  var params = geometry.metadata
+    ? geometry.metadata.parameters
+    : geometry.parameters;
+
+  var shape = new Cylinder(
     params.radiusTop,
     params.radiusBottom,
     params.height,
@@ -194,25 +190,22 @@ function createCylinderShape (geometry) {
  * @return {CANNON.Shape}
  */
 function createBoundingCylinderShape (object, options) {
-  var shape, height, radius,
-      box = new Box3(),
-      axes = ['x', 'y', 'z'],
-      majorAxis = options.cylinderAxis || 'y',
-      minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
-
-  box.setFromObject(object);
+  var axes = ['x', 'y', 'z'];
+  var majorAxis = options.cylinderAxis || 'y';
+  var minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
+  var box = new Box3().setFromObject(object);
 
   if (!isFinite(box.min.lengthSq())) return null;
 
   // Compute cylinder dimensions.
-  height = box.max[majorAxis] - box.min[majorAxis];
-  radius = 0.5 * Math.max(
+  var height = box.max[majorAxis] - box.min[majorAxis];
+  var radius = 0.5 * Math.max(
     box.max[minorAxes[0]] - box.min[minorAxes[0]],
     box.max[minorAxes[1]] - box.min[minorAxes[1]]
   );
 
   // Create shape.
-  shape = new Cylinder(radius, radius, height, 12);
+  var shape = new Cylinder(radius, radius, height, 12);
 
   // Include metadata for serialization.
   shape._type = Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
@@ -275,12 +268,11 @@ function createBoundingSphereShape (object, options) {
  * @return {CANNON.Shape}
  */
 function createTrimeshShape (geometry) {
-  var indices,
-      vertices = getVertices(geometry);
+  var vertices = getVertices(geometry);
 
   if (!vertices.length) return null;
 
-  indices = Object.keys(vertices).map(Number);
+  var indices = Object.keys(vertices).map(Number);
   return new Trimesh(vertices, indices);
 }
 
@@ -295,7 +287,7 @@ function createTrimeshShape (geometry) {
  * @return {THREE.Geometry}
  */
 function getGeometry (object) {
-  var matrix, mesh,
+  var mesh,
       meshes = getMeshes(object),
       tmp = new Geometry(),
       combined = new Geometry();
@@ -337,7 +329,7 @@ function getGeometry (object) {
     }
   }
 
-  matrix = new Matrix4();
+  var matrix = new Matrix4();
   matrix.scale(object.scale);
   combined.applyMatrix(matrix);
   return combined;
