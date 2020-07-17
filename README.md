@@ -11,8 +11,13 @@ Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplifi
 
 Installation:
 
+### Via NPM
 ```js
 npm install --save three-to-cannon
+```
+### Via Yarn
+```js
+yarn add --save three-to-cannon
 ```
 
 Import:
