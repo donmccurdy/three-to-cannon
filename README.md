@@ -3,7 +3,7 @@
 [![Latest NPM release](https://img.shields.io/npm/v/three-to-cannon.svg)](https://www.npmjs.com/package/three-to-cannon)
 [![Minzipped size](https://badgen.net/bundlephobia/minzip/three-to-cannon)](https://bundlephobia.com/result?p=three-to-cannon)
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/three-to-cannon/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/donmccurdy/three-to-cannon.svg?branch=master)](https://travis-ci.org/donmccurdy/three-to-cannon)
+[![Build Status](https://travis-ci.com/donmccurdy/three-to-cannon.svg?branch=master)](https://travis-ci.com/donmccurdy/three-to-cannon)
 
 Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplified shapes.
 
