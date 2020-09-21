@@ -181,7 +181,7 @@ function createCylinderShape (geometry) {
   shape.numSegments = params.radialSegments;
 
   shape.orientation = new CQuaternion();
-  shape.orientation.setFromEuler(_Math.degToRad(90), 0, 0, 'XYZ').normalize();
+  shape.orientation.setFromEuler(_Math.degToRad(-90), 0, 0, 'XYZ').normalize();
   return shape;
 }
 
