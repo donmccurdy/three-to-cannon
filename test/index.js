@@ -58,6 +58,25 @@ test('shape - cylinder', function (t) {
   t.end();
 });
 
+test('shape - cylinder without type', function (t) {
+  const geometry = new THREE.CylinderGeometry(2, 3, 5, 8);
+  const bufferGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
+  bufferGeometry.metadata = {type: geometry.type, parameters: geometry.parameters || {}};
+  const cylinderObject = new THREE.Mesh(bufferGeometry);
+  const cylinder = threeToCannon(cylinderObject);
+
+  t.equal( cylinder.type, ShapeType.CYLINDER, 'cylinder.type' );
+  t.equal( cylinder.radiusTop, 2, 'cylinder.radiusTop' );
+  t.equal( cylinder.radiusBottom, 3, 'cylinder.radiusBottom' );
+  t.equal( cylinder.height, 5, 'cylinder.height' );
+  t.ok( equalsApprox( cylinder.orientation.x, -0.707106 ), 'cylinder.orientation.x' );
+  t.ok( equalsApprox( cylinder.orientation.y, 0 ), 'cylinder.orientation.y' );
+  t.ok( equalsApprox( cylinder.orientation.z, 0 ), 'cylinder.orientation.z' );
+  t.ok( equalsApprox( cylinder.orientation.w, 0.707106 ), 'cylinder.orientation.w' );
+
+  t.end();
+});
+
 test('shape - hull', function (t) {
   const hull = threeToCannon(object, {type: threeToCannon.Type.HULL});
 
