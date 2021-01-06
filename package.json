@@ -7,10 +7,9 @@
   "source": "index.js",
   "scripts": {
     "test": "tape test/index.js | tap-spec",
-    "preversion": "npm run dist && npm test",
     "dev": "microbundle watch --globals three=THREE --external three",
     "dist": "microbundle --globals three=THREE --external three",
-    "version": "git add -A dist",
+    "preversion": "npm run dist && npm test",
     "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
@@ -42,5 +41,14 @@
     "tap-spec": "^5.0.0",
     "tape": "^4.9.0",
     "three": "^0.115.0"
-  }
+  },
+  "files": [
+    "dist/",
+    "lib/",
+    "index.js",
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "package-lock.json"
+  ]
 }
