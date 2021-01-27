@@ -1,5 +1,6 @@
 import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
-import { Box3, BufferGeometry, Geometry, Matrix4, Mesh, Quaternion, Vector3, Math as _Math } from 'three';
+import { Box3, BufferGeometry, Matrix4, Mesh, Quaternion, Vector3, Math as _Math } from 'three';
+import { Geometry } from "three/examples/jsm/deprecated/Geometry";
 import { ConvexHull } from './lib/ConvexHull.js';
 
 var PI_2 = Math.PI / 2;
@@ -341,7 +342,7 @@ function getGeometry (object) {
  */
 function getVertices (geometry) {
   if (!geometry.attributes) {
-    geometry = new BufferGeometry().fromGeometry(geometry);
+    geometry = geometry.toBufferGeometry();
   }
   return (geometry.attributes.position || {}).array || [];
 }
