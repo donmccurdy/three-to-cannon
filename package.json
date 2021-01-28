@@ -31,8 +31,8 @@
   },
   "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
   "peerDependencies": {
-    "cannon-es": "^0.9.1",
-    "three": "^0.115.0"
+    "cannon-es": "0.x.x",
+    "three": "0.x.x"
   },
   "devDependencies": {
     "cannon-es": "^0.9.1",
