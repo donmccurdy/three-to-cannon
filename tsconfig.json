@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "moduleResolution": "node",
+      "lib": ["es6", "dom"],
+      "target": "es6",
+      "declaration": true,
+      "typeRoots": ["node_modules/@types"],
+      "strict": true,
+    },
+}

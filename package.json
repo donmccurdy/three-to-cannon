@@ -34,13 +34,19 @@
     "cannon-es": "0.x.x",
     "three": "0.x.x"
   },
+  "dependencies": {
+    "@types/three": "^0.126.0"
+  },
   "devDependencies": {
+    "@types/tape": "^4.13.0",
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
     "cannon-es": "^0.17.0",
     "esm": "^3.2.25",
     "microbundle": "^0.13.0",
     "tap-spec": "^5.0.0",
     "tape": "^5.2.2",
-    "three": "^0.115.0"
+    "three": "^0.115.0",
+    "typescript": "^4.2.3"
   },
   "files": [
     "dist/",

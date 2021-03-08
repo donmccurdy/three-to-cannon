@@ -1,26 +1,36 @@
-import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
-import { Box3, BufferGeometry, Geometry, Matrix4, Mesh, Quaternion, Vector3, Math as _Math } from 'three';
+import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Sphere, Trimesh, Vec3, Shape } from 'cannon-es';
+import { Box3, BufferGeometry, Matrix4, Mesh, Quaternion, Vector3, MathUtils, Object3D, Geometry } from 'three';
 import { ConvexHull } from './lib/ConvexHull.js';
 
-var PI_2 = Math.PI / 2;
+const PI_2 = Math.PI / 2;
 
-var Type = {
-  BOX: 'Box',
-  CYLINDER: 'Cylinder',
-  SPHERE: 'Sphere',
-  HULL: 'ConvexPolyhedron',
-  MESH: 'Trimesh'
+export enum Type {
+  BOX = 'Box',
+  CYLINDER = 'Cylinder',
+  SPHERE = 'Sphere',
+  HULL = 'ConvexPolyhedron',
+  MESH = 'Trimesh',
+};
+
+export interface ShapeOptions {
+  type?: Type,
+  cylinderAxis?: 'x' | 'y' | 'z',
+  sphereRadius?: number,
+};
+
+type AnyGeometry = {
+  isGeometry: boolean,
+  isBufferGeometry: boolean,
+  metadata: Record<string, unknown>,
 };
 
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
- * @param  {THREE.Object3D} object
- * @return {CANNON.Shape}
  */
-export const threeToCannon = function (object, options) {
+export const threeToCannon = function (object: Object3D, options: ShapeOptions): Shape | null {
   options = options || {};
 
-  var geometry;
+  let geometry: Geometry | null;
 
   if (options.type === Type.BOX) {
     return createBoundingBoxShape(object);
@@ -34,7 +44,7 @@ export const threeToCannon = function (object, options) {
     geometry = getGeometry(object);
     return geometry ? createTrimeshShape(geometry) : null;
   } else if (options.type) {
-    throw new Error('[CANNON.threeToCannon] Invalid type "%s".', options.type);
+    throw new Error(`[CANNON.threeToCannon] Invalid type "${options.type}".`);
   }
 
   geometry = getGeometry(object);
@@ -67,53 +77,47 @@ export const threeToCannon = function (object, options) {
   }
 };
 
-threeToCannon.Type = Type;
-
 /******************************************************************************
  * Shape construction
  */
 
- /**
-  * @param  {THREE.Geometry} geometry
-  * @return {CANNON.Shape}
-  */
- function createBoxShape (geometry) {
-   var vertices = getVertices(geometry);
+function createBoxShape (geometry: Geometry | BufferGeometry): Shape | null {
+   const vertices = getVertices(geometry);
 
    if (!vertices.length) return null;
 
    geometry.computeBoundingBox();
-   var box = geometry.boundingBox;
+   const box = geometry.boundingBox!;
    return new Box(new Vec3(
      (box.max.x - box.min.x) / 2,
      (box.max.y - box.min.y) / 2,
      (box.max.z - box.min.z) / 2
    ));
- }
+}
 
 /**
  * Bounding box needs to be computed with the entire mesh, not just geometry.
  * @param  {THREE.Object3D} mesh
  * @return {CANNON.Shape}
  */
-function createBoundingBoxShape (object) {
-  var clone = object.clone();
+function createBoundingBoxShape (object: Object3D): Shape | null {
+  const clone = object.clone();
   clone.quaternion.set(0, 0, 0, 1);
   clone.updateMatrixWorld();
 
-  var box = new Box3().setFromObject(clone);
+  const box = new Box3().setFromObject(clone);
 
   if (!isFinite(box.min.lengthSq())) return null;
 
-  var shape = new Box(new Vec3(
+  const shape = new Box(new Vec3(
     (box.max.x - box.min.x) / 2,
     (box.max.y - box.min.y) / 2,
     (box.max.z - box.min.z) / 2
   ));
 
-  var localPosition = box.translate(clone.position.negate()).getCenter(new Vector3());
+  const localPosition = box.translate(clone.position.negate()).getCenter(new Vector3());
   if (localPosition.lengthSq()) {
-    shape.offset = localPosition;
+    (shape as unknown as Record<string, unknown>)['offset'] = localPosition;
   }
 
   return shape;
@@ -121,33 +125,31 @@ function createBoundingBoxShape (object) {
 
 /**
  * Computes 3D convex hull as a CANNON.ConvexPolyhedron.
- * @param  {THREE.Object3D} mesh
- * @return {CANNON.Shape}
  */
-function createConvexPolyhedron (object) {
-  var geometry = getGeometry(object);
+function createConvexPolyhedron (object: Object3D): Shape | null {
+  const geometry = getGeometry(object);
 
   if (!geometry || !geometry.vertices.length) return null;
 
   // Perturb.
-  var eps = 1e-4;
-  for (var i = 0; i < geometry.vertices.length; i++) {
+  const eps = 1e-4;
+  for (let i = 0; i < geometry.vertices.length; i++) {
     geometry.vertices[i].x += (Math.random() - 0.5) * eps;
     geometry.vertices[i].y += (Math.random() - 0.5) * eps;
     geometry.vertices[i].z += (Math.random() - 0.5) * eps;
   }
 
   // Compute the 3D convex hull.
-  var hull = new ConvexHull().setFromObject(new Mesh(geometry));
-  var faces = hull.faces;
-  var vertices = [];
-  var normals = [];
+  const hull = new ConvexHull().setFromObject(new Mesh(geometry));
+  const faces = hull.faces;
+  const vertices = [];
+  const normals = [];
 
-  for ( var i = 0; i < faces.length; i ++ ) {
-    var face = faces[ i ];
-    var edge = face.edge;
+  for (let i = 0; i < faces.length; i++) {
+    const face = faces[ i ];
+    let edge = face.edge;
     do {
-      var point = edge.head().point;
+      const point = edge.head().point;
       vertices.push( new Vec3(point.x, point.y, point.z) );
       normals.push( new Vec3(face.normal.x, face.normal.y, face.normal.z) );
       edge = edge.next;
@@ -157,11 +159,7 @@ function createConvexPolyhedron (object) {
   return new ConvexPolyhedron({vertices, normals});
 }
 
-/**
- * @param  {THREE.Geometry} geometry
- * @return {CANNON.Shape}
- */
-function createCylinderShape (geometry) {
+function createCylinderShape (geometry: Geometry): Shape | null {
   var params = geometry.metadata
     ? geometry.metadata.parameters
     : geometry.parameters;
@@ -180,15 +178,11 @@ function createCylinderShape (geometry) {
   shape.numSegments = params.radialSegments;
 
   shape.orientation = new CQuaternion();
-  shape.orientation.setFromEuler(_Math.degToRad(-90), 0, 0, 'XYZ').normalize();
+  shape.orientation.setFromEuler(MathUtils.degToRad(-90), 0, 0, 'XYZ').normalize();
   return shape;
 }
 
-/**
- * @param  {THREE.Object3D} object
- * @return {CANNON.Shape}
- */
-function createBoundingCylinderShape (object, options) {
+function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): Shape | null {
   var axes = ['x', 'y', 'z'];
   var majorAxis = options.cylinderAxis || 'y';
   var minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
@@ -222,13 +216,9 @@ function createBoundingCylinderShape (object, options) {
   return shape;
 }
 
-/**
- * @param  {THREE.Geometry} geometry
- * @return {CANNON.Shape}
- */
-function createPlaneShape (geometry) {
+function createPlaneShape (geometry: Geometry): Shape | null {
   geometry.computeBoundingBox();
-  var box = geometry.boundingBox;
+  var box = geometry.boundingBox!;
   return new Box(new Vec3(
     (box.max.x - box.min.x) / 2 || 0.1,
     (box.max.y - box.min.y) / 2 || 0.1,
@@ -236,36 +226,24 @@ function createPlaneShape (geometry) {
   ));
 }
 
-/**
- * @param  {THREE.Geometry} geometry
- * @return {CANNON.Shape}
- */
-function createSphereShape (geometry) {
+function createSphereShape (geometry: Geometry): Shape | null {
   var params = geometry.metadata
     ? geometry.metadata.parameters
     : geometry.parameters;
   return new Sphere(params.radius);
 }
 
-/**
- * @param  {THREE.Object3D} object
- * @return {CANNON.Shape}
- */
-function createBoundingSphereShape (object, options) {
+function createBoundingSphereShape (object: Object3D, options: ShapeOptions): Shape | null {
   if (options.sphereRadius) {
     return new Sphere(options.sphereRadius);
   }
   var geometry = getGeometry(object);
   if (!geometry) return null;
   geometry.computeBoundingSphere();
-  return new Sphere(geometry.boundingSphere.radius);
+  return new Sphere(geometry.boundingSphere!.radius);
 }
 
-/**
- * @param  {THREE.Geometry} geometry
- * @return {CANNON.Shape}
- */
-function createTrimeshShape (geometry) {
+function createTrimeshShape (geometry: Geometry): Shape | null {
   var vertices = getVertices(geometry);
 
   if (!vertices.length) return null;
@@ -281,10 +259,8 @@ function createTrimeshShape (geometry) {
 /**
  * Returns a single geometry for the given object. If the object is compound,
  * its geometries are automatically merged.
- * @param {THREE.Object3D} object
- * @return {THREE.Geometry}
  */
-function getGeometry (object) {
+function getGeometry (object: Object3D): Geometry | null {
   var mesh,
       meshes = getMeshes(object),
       tmp = new Geometry(),
@@ -294,13 +270,13 @@ function getGeometry (object) {
 
   // Apply scale  – it can't easily be applied to a CANNON.Shape later.
   if (meshes.length === 1) {
-    var position = new Vector3(),
+    const position = new Vector3(),
         quaternion = new Quaternion(),
         scale = new Vector3();
-    if (meshes[0].geometry.isBufferGeometry) {
-      if (meshes[0].geometry.attributes.position
-          && meshes[0].geometry.attributes.position.itemSize > 2) {
-        tmp.fromBufferGeometry(meshes[0].geometry);
+    if ((meshes[0].geometry as unknown as Record<string, unknown>).isBufferGeometry) {
+      const _g = meshes[0].geometry as BufferGeometry;
+      if (_g.attributes.position && _g.attributes.position.itemSize > 2) {
+        tmp.fromBufferGeometry(_g);
       }
     } else {
       tmp = meshes[0].geometry.clone();
@@ -317,7 +293,7 @@ function getGeometry (object) {
     if (mesh.geometry.isBufferGeometry) {
       if (mesh.geometry.attributes.position
           && mesh.geometry.attributes.position.itemSize > 2) {
-        var tmpGeom = new Geometry();
+        const tmpGeom = new Geometry();
         tmpGeom.fromBufferGeometry(mesh.geometry);
         combined.merge(tmpGeom, mesh.matrixWorld);
         tmpGeom.dispose();
@@ -327,21 +303,28 @@ function getGeometry (object) {
     }
   }
 
-  var matrix = new Matrix4();
+  const matrix = new Matrix4();
   matrix.scale(object.scale);
-  combined.applyMatrix(matrix);
+  combined.applyMatrix4(matrix);
   return combined;
 }
 
-/**
- * @param  {THREE.Geometry} geometry
- * @return {Array<number>}
- */
-function getVertices (geometry) {
-  if (!geometry.attributes) {
-    geometry = new BufferGeometry().fromGeometry(geometry);
+function getVertices (geometry: Geometry | BufferGeometry): Float32Array {
+  let _geometry = geometry as unknown as AnyGeometry;
+  if (_geometry.isBufferGeometry) {
+    geometry = geometry as BufferGeometry;
+  } else {
+    geometry = (geometry as Geometry).toBufferGeometry() as BufferGeometry;
   }
-  return (geometry.attributes.position || {}).array || [];
+
+  const position = geometry.attributes.position;
+  const vertices = new Float32Array(position.count * 3);
+  for (let i = 0; i < position.count; i += 3) {
+    vertices[i] = position.getX(i);
+    vertices[i + 1] = position.getY(i);
+    vertices[i + 2] = position.getZ(i);
+  }
+  return vertices;
 }
 
 /**
@@ -349,14 +332,12 @@ function getVertices (geometry) {
  * nested transformations are found, they are applied to child meshes
  * as mesh.userData.matrix, so that each mesh has its position/rotation/scale
  * independently of all of its parents except the top-level object.
- * @param  {THREE.Object3D} object
- * @return {Array<THREE.Mesh>}
  */
-function getMeshes (object) {
-  var meshes = [];
+function getMeshes (object: Object3D): Mesh[] {
+  const meshes: Mesh[] = [];
   object.traverse(function (o) {
-    if (o.type === 'Mesh') {
-      meshes.push(o);
+    if ((o as unknown as Record<string, unknown>).isMesh) {
+      meshes.push(o as Mesh);
     }
   });
   return meshes;
