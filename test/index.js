@@ -7,15 +7,8 @@ global.performance = performance;
 
 const test = require('tape');
 const THREE = global.THREE = require('three');
+const { Shape } = require('cannon-es');
 const threeToCannon = require('../').threeToCannon;
-
-const ShapeType = {
-  BOX: 4,
-  SPHERE: 1,
-  CYLINDER: 16,
-  HULL: 16, // :/
-  MESH: 256
-};
 
 const object = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
 
@@ -26,7 +19,7 @@ function equalsApprox ( a, b ) {
 test('shape - box', function (t) {
   var box = threeToCannon(object, {type: threeToCannon.Type.BOX});
 
-  t.equal( box.type, ShapeType.BOX, 'box.type' );
+  t.equal( box.type, Shape.types.BOX, 'box.type' );
   t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
   t.equal( box.halfExtents.y, 5, 'box.halfExtents.y' );
   t.equal( box.halfExtents.z, 5, 'box.halfExtents.z' );
@@ -37,7 +30,7 @@ test('shape - box', function (t) {
 test('shape - sphere', function (t) {
   const sphere = threeToCannon(object, {type: threeToCannon.Type.SPHERE});
 
-  t.equal( sphere.type, ShapeType.SPHERE, 'sphere.type' );
+  t.equal( sphere.type, Shape.types.SPHERE, 'sphere.type' );
   t.ok( equalsApprox( sphere.radius, 8.660254 ), 'sphere.radius' );
 
   t.end();
@@ -46,7 +39,7 @@ test('shape - sphere', function (t) {
 test('shape - cylinder', function (t) {
   const cylinder = threeToCannon(object, {type: threeToCannon.Type.CYLINDER});
 
-  t.equal( cylinder.type, ShapeType.CYLINDER, 'cylinder.type' );
+  t.equal( cylinder.type, Shape.types.CYLINDER, 'cylinder.type' );
   t.equal( cylinder.radiusTop, 5, 'cylinder.radiusTop' );
   t.equal( cylinder.radiusBottom, 5, 'cylinder.radiusBottom' );
   t.equal( cylinder.height, 10, 'cylinder.height' );
@@ -58,29 +51,10 @@ test('shape - cylinder', function (t) {
   t.end();
 });
 
-test('shape - cylinder without type', function (t) {
-  const geometry = new THREE.CylinderGeometry(2, 3, 5, 8);
-  const bufferGeometry = new THREE.BufferGeometry().fromGeometry(geometry);
-  bufferGeometry.metadata = {type: geometry.type, parameters: geometry.parameters || {}};
-  const cylinderObject = new THREE.Mesh(bufferGeometry);
-  const cylinder = threeToCannon(cylinderObject);
-
-  t.equal( cylinder.type, ShapeType.CYLINDER, 'cylinder.type' );
-  t.equal( cylinder.radiusTop, 2, 'cylinder.radiusTop' );
-  t.equal( cylinder.radiusBottom, 3, 'cylinder.radiusBottom' );
-  t.equal( cylinder.height, 5, 'cylinder.height' );
-  t.ok( equalsApprox( cylinder.orientation.x, -0.707106 ), 'cylinder.orientation.x' );
-  t.ok( equalsApprox( cylinder.orientation.y, 0 ), 'cylinder.orientation.y' );
-  t.ok( equalsApprox( cylinder.orientation.z, 0 ), 'cylinder.orientation.z' );
-  t.ok( equalsApprox( cylinder.orientation.w, 0.707106 ), 'cylinder.orientation.w' );
-
-  t.end();
-});
-
 test('shape - hull', function (t) {
   const hull = threeToCannon(object, {type: threeToCannon.Type.HULL});
 
-  t.equal( hull.type, ShapeType.HULL, 'hull.type' );
+  t.equal( hull.type, Shape.types.CONVEXPOLYHEDRON, 'hull.type' );
   t.equals( hull.boundingSphereRadius.toFixed( 3 ), '8.660', 'hull.boundingSphereRadius' );
 
   t.end();
@@ -89,7 +63,7 @@ test('shape - hull', function (t) {
 test('shape - mesh', function (t) {
   const mesh = threeToCannon(object, {type: threeToCannon.Type.MESH});
 
-  t.equal( mesh.type, ShapeType.MESH, 'mesh.type' );
+  t.equal( mesh.type, Shape.types.TRIMESH, 'mesh.type' );
   t.equals( mesh.boundingSphereRadius.toFixed( 3 ), '8.660', 'mesh.boundingSphereRadius' );
 
   t.end();
@@ -106,7 +80,7 @@ test('transform - position', function (t) {
 
   const box = threeToCannon(object);
 
-  t.equal( box.type, ShapeType.BOX, 'box.type' );
+  t.equal( box.type, Shape.types.BOX, 'box.type' );
   t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
   t.equal( box.halfExtents.y, 5, 'box.halfExtents.y' );
   t.equal( box.halfExtents.z, 5, 'box.halfExtents.z' );

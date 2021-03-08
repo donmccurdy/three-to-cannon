@@ -174,7 +174,6 @@ function createCylinderShape (geometry) {
   );
 
   // Include metadata for serialization.
-  shape._type = Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
   shape.radiusTop = params.radiusTop;
   shape.radiusBottom = params.radiusBottom;
   shape.height = params.height;
@@ -208,7 +207,6 @@ function createBoundingCylinderShape (object, options) {
   var shape = new Cylinder(radius, radius, height, 12);
 
   // Include metadata for serialization.
-  shape._type = Shape.types.CYLINDER; // Patch schteppe/cannon.js#329.
   shape.radiusTop = radius;
   shape.radiusBottom = radius;
   shape.height = height;
