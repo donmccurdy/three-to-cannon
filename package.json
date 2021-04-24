@@ -33,10 +33,10 @@
   "homepage": "https://github.com/donmccurdy/three-to-cannon#readme",
   "peerDependencies": {
     "cannon-es": "0.x.x",
-    "three": "0.x.x"
+    "three": ">=0.125.x"
   },
   "dependencies": {
-    "@types/three": "^0.126.0"
+    "@types/three": "^0.127.1"
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
@@ -46,7 +46,7 @@
     "microbundle": "^0.13.0",
     "tap-spec": "^5.0.0",
     "tape": "^5.2.2",
-    "three": "^0.115.0",
+    "three": "^0.128.0",
     "typescript": "^4.2.3"
   },
   "files": [
