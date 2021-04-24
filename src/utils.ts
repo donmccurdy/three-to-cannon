@@ -56,7 +56,7 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
    return meshes;
 }
 
-export function getComponent(v: Vector3, component: string) {
+export function getComponent(v: Vector3, component: string): number {
     switch(component) {
       case 'x': return v.x;
       case 'y': return v.y;
@@ -74,33 +74,33 @@ export function getComponent(v: Vector3, component: string) {
    * @param {number} tolerance
    * @return {THREE.BufferGeometry>}
    */
-export function mergeVertices (geometry: BufferGeometry, tolerance = 1e-4) {
+export function mergeVertices (geometry: BufferGeometry, tolerance = 1e-4): BufferGeometry {
 
     tolerance = Math.max( tolerance, Number.EPSILON );
 
     // Generate an index buffer if the geometry doesn't have one, or optimize it
     // if it's already available.
-    var hashToIndex: {[key: string]: number} = {};
-    var indices = geometry.getIndex();
-    var positions = geometry.getAttribute( 'position' );
-    var vertexCount = indices ? indices.count : positions.count;
+    const hashToIndex: {[key: string]: number} = {};
+    const indices = geometry.getIndex();
+    const positions = geometry.getAttribute( 'position' );
+    const vertexCount = indices ? indices.count : positions.count;
 
     // Next value for triangle indices.
-    var nextIndex = 0;
+    let nextIndex = 0;
 
-    var newIndices = [];
-    var newPositions = [];
+    const newIndices = [];
+    const newPositions = [];
 
     // Convert the error tolerance to an amount of decimal places to truncate to.
-    var decimalShift = Math.log10( 1 / tolerance );
-    var shiftMultiplier = Math.pow( 10, decimalShift );
+    const decimalShift = Math.log10( 1 / tolerance );
+    const shiftMultiplier = Math.pow( 10, decimalShift );
 
-    for ( var i = 0; i < vertexCount; i ++ ) {
+    for ( let i = 0; i < vertexCount; i ++ ) {
 
-      var index = indices ? indices.getX( i ) : i;
+      const index = indices ? indices.getX( i ) : i;
 
       // Generate a hash for the vertex attributes at the current index 'i'.
-      var hash = '';
+      let hash = '';
 
       // Double tilde truncates the decimal value.
       hash += `${ ~ ~ ( positions.getX( index ) * shiftMultiplier ) },`;

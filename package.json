@@ -11,7 +11,8 @@
     "watch": "microbundle watch --format modern,cjs,umd --globals three=THREE --external three",
     "dist": "microbundle --format modern,cjs,umd --globals three=THREE --external three",
     "preversion": "npm run dist && npm test",
-    "postversion": "git push && git push --tags && npm publish"
+    "postversion": "git push && git push --tags && npm publish",
+    "lint": "eslint src/* test/* --fix"
   },
   "repository": {
     "type": "git",
@@ -41,7 +42,9 @@
   "devDependencies": {
     "@types/tape": "^4.13.0",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.22.0",
     "cannon-es": "^0.17.0",
+    "eslint": "^7.25.0",
     "esm": "^3.2.25",
     "microbundle": "^0.13.0",
     "tap-spec": "^5.0.0",

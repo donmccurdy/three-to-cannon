@@ -1,4 +1,5 @@
 // See: https://github.com/substack/tape/issues/514
+// eslint-disable-next-line no-global-assign,@typescript-eslint/no-var-requires
 require = require('esm')(module);
 
 import { Box, ConvexPolyhedron, Cylinder, Quaternion, Shape, Sphere, Trimesh } from 'cannon-es';
@@ -19,7 +20,7 @@ interface PatchedShape {
 }
 
 test('shape - box', function (t) {
-  var box = threeToCannon(object, {type: Type.BOX}) as Box;
+  const box = threeToCannon(object, {type: Type.BOX}) as Box;
 
   t.equal( box.type, Shape.types.BOX, 'box.type' );
   t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );

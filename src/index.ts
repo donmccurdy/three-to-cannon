@@ -12,13 +12,13 @@ export enum Type {
   SPHERE = 'Sphere',
   HULL = 'ConvexPolyhedron',
   MESH = 'Trimesh',
-};
+}
 
 export interface ShapeOptions {
   type?: Type,
   cylinderAxis?: 'x' | 'y' | 'z',
   sphereRadius?: number,
-};
+}
 
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
@@ -146,9 +146,9 @@ function createConvexPolyhedron (object: Object3D): Shape | null {
 }
 
 function createCylinderShape (geometry: CylinderGeometry): Shape | null {
-  var params = geometry.parameters;
+  const params = geometry.parameters;
 
-  var shape = new Cylinder(
+  const shape = new Cylinder(
     params.radiusTop,
     params.radiusBottom,
     params.height,
@@ -167,22 +167,22 @@ function createCylinderShape (geometry: CylinderGeometry): Shape | null {
 }
 
 function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): Shape | null {
-  var axes = ['x', 'y', 'z'];
-  var majorAxis = options.cylinderAxis || 'y';
-  var minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
-  var box = new Box3().setFromObject(object);
+  const axes = ['x', 'y', 'z'];
+  const majorAxis = options.cylinderAxis || 'y';
+  const minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
+  const box = new Box3().setFromObject(object);
 
   if (!isFinite(box.min.lengthSq())) return null;
 
   // Compute cylinder dimensions.
-  var height = box.max[majorAxis] - box.min[majorAxis];
-  var radius = 0.5 * Math.max(
+  const height = box.max[majorAxis] - box.min[majorAxis];
+  const radius = 0.5 * Math.max(
     getComponent(box.max, minorAxes[0]) - getComponent(box.min, minorAxes[0]),
     getComponent(box.max, minorAxes[1]) - getComponent(box.min, minorAxes[1]),
   );
 
   // Create shape.
-  var shape = new Cylinder(radius, radius, height, 12) as PatchedCylinder;
+  const shape = new Cylinder(radius, radius, height, 12) as PatchedCylinder;
 
   // Include metadata for serialization.
   shape.radiusTop = radius;
@@ -202,7 +202,7 @@ function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): 
 
 function createPlaneShape (geometry: BufferGeometry): Shape | null {
   geometry.computeBoundingBox();
-  var box = geometry.boundingBox!;
+  const box = geometry.boundingBox!;
   return new Box(new Vec3(
     (box.max.x - box.min.x) / 2 || 0.1,
     (box.max.y - box.min.y) / 2 || 0.1,
@@ -218,17 +218,17 @@ function createBoundingSphereShape (object: Object3D, options: ShapeOptions): Sh
   if (options.sphereRadius) {
     return new Sphere(options.sphereRadius);
   }
-  var geometry = getGeometry(object);
+  const geometry = getGeometry(object);
   if (!geometry) return null;
   geometry.computeBoundingSphere();
   return new Sphere(geometry.boundingSphere!.radius);
 }
 
 function createTrimeshShape (geometry: BufferGeometry): Shape | null {
-  var vertices = getVertices(geometry);
+  const vertices = getVertices(geometry);
 
   if (!vertices.length) return null;
 
-  var indices = Object.keys(vertices).map(Number);
+  const indices = Object.keys(vertices).map(Number);
   return new Trimesh(vertices as unknown as number[], indices);
 }
