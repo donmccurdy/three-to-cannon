@@ -69,7 +69,7 @@ export function getComponent(v: Vector3, component: string): number {
 * @param {number} tolerance
 * @return {THREE.BufferGeometry>}
 */
-export function mergeVertices (geometry: BufferGeometry, tolerance = 1e-4): BufferGeometry {
+function mergeVertices (geometry: BufferGeometry, tolerance = 1e-4): BufferGeometry {
 
 	tolerance = Math.max( tolerance, Number.EPSILON );
 
