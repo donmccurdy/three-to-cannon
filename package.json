@@ -7,8 +7,8 @@
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "tape test/index.js | tap-spec",
-    "dev": "microbundle watch --format modern,cjs,umd --globals three=THREE --external three",
+    "test": "ts-node node_modules/tape/bin/tape test/*.test.ts | tap-spec",
+    "watch": "microbundle watch --format modern,cjs,umd --globals three=THREE --external three",
     "dist": "microbundle --format modern,cjs,umd --globals three=THREE --external three",
     "preversion": "npm run dist && npm test",
     "postversion": "git push && git push --tags && npm publish"
@@ -47,6 +47,7 @@
     "tap-spec": "^5.0.0",
     "tape": "^5.2.2",
     "three": "^0.128.0",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.3"
   },
   "files": [

@@ -1,5 +1,4 @@
 {
-  "include": ["src/*.ts"],
   "compilerOptions": {
     "typeRoots": ["node_modules/@types"],
     "moduleResolution": "node",

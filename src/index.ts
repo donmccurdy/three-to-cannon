@@ -23,9 +23,7 @@ export interface ShapeOptions {
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
  */
-export const threeToCannon = function (object: Object3D, options: ShapeOptions): Shape | null {
-  options = options || {};
-
+export const threeToCannon = function (object: Object3D, options: ShapeOptions = {}): Shape | null {
   let geometry: BufferGeometry | null;
 
   if (options.type === Type.BOX) {
