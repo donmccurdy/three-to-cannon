@@ -1,10 +1,12 @@
 {
-    "compilerOptions": {
-      "moduleResolution": "node",
-      "lib": ["es6", "dom"],
-      "target": "es6",
-      "declaration": true,
-      "typeRoots": ["node_modules/@types"],
-      "strict": true,
-    },
+  "include": ["./*.ts"],
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "lib": ["es6", "dom"],
+    "target": "es6",
+    "allowJs": true,
+    "declaration": true,
+    "typeRoots": ["node_modules/@types"],
+    "strict": true,
+  }
 }
