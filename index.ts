@@ -277,7 +277,7 @@ function getGeometry (object: Object3D): Geometry | null {
     const position = new Vector3(),
         quaternion = new Quaternion(),
         scale = new Vector3();
-    if ((meshes[0].geometry as unknown as Record<string, unknown>).isBufferGeometry) {
+    if ((meshes[0].geometry as BufferGeometry).isBufferGeometry) {
       const _g = meshes[0].geometry as BufferGeometry;
       if (_g.attributes.position && _g.attributes.position.itemSize > 2) {
         tmp.fromBufferGeometry(_g);
@@ -341,7 +341,7 @@ function getVertices (geometry: Geometry | BufferGeometry): Float32Array {
 function getMeshes (object: Object3D): Mesh[] {
   const meshes: Mesh[] = [];
   object.traverse(function (o) {
-    if ((o as unknown as Record<string, unknown>).isMesh) {
+    if ((o as Mesh).isMesh) {
       meshes.push(o as Mesh);
     }
   });
