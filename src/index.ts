@@ -1,7 +1,6 @@
 import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
 import { Box3, BufferGeometry, CylinderGeometry, MathUtils, Mesh, Object3D, SphereGeometry, Vector3 } from 'three';
 import { ConvexHull } from '../lib/ConvexHull.js';
-import { PatchedBox, PatchedCylinder } from './types.js';
 import { getComponent, getGeometry, getVertices } from './utils.js';
 
 const PI_2 = Math.PI / 2;
@@ -20,10 +19,16 @@ export interface ShapeOptions {
 	sphereRadius?: number,
 }
 
+export interface ShapeResult<T extends Shape = Shape> {
+	shape: T,
+	offset?: Vec3,
+	orientation?: CQuaternion
+}
+
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
  */
-export const threeToCannon = function (object: Object3D, options: ShapeOptions = {}): Shape | null {
+export const threeToCannon = function (object: Object3D, options: ShapeOptions = {}): ShapeResult | null {
 	let geometry: BufferGeometry | null;
 
 	if (options.type === Type.BOX) {
@@ -72,22 +77,23 @@ export const threeToCannon = function (object: Object3D, options: ShapeOptions =
  * Shape construction
  */
 
-function createBoxShape (geometry: BufferGeometry): Shape | null {
+function createBoxShape (geometry: BufferGeometry): ShapeResult | null {
 	const vertices = getVertices(geometry);
 
 	if (!vertices.length) return null;
 
 	geometry.computeBoundingBox();
 	const box = geometry.boundingBox!;
-	return new Box(new Vec3(
+	const shape = new Box(new Vec3(
 		(box.max.x - box.min.x) / 2,
 		(box.max.y - box.min.y) / 2,
 		(box.max.z - box.min.z) / 2
-		));
-	}
+	));
+	return {shape};
+}
 
 /** Bounding box needs to be computed with the entire subtree, not just geometry. */
-function createBoundingBoxShape (object: Object3D): Shape | null {
+function createBoundingBoxShape (object: Object3D): ShapeResult | null {
 	const clone = object.clone();
 	clone.quaternion.set(0, 0, 0, 1);
 	clone.updateMatrixWorld();
@@ -100,18 +106,20 @@ function createBoundingBoxShape (object: Object3D): Shape | null {
 		(box.max.x - box.min.x) / 2,
 		(box.max.y - box.min.y) / 2,
 		(box.max.z - box.min.z) / 2
-	)) as PatchedBox;
+	));
 
 	const localPosition = box.translate(clone.position.negate()).getCenter(new Vector3());
-	if (localPosition.lengthSq()) {
-		shape.offset = localPosition;
-	}
 
-	return shape;
+	return {
+		shape,
+		offset: localPosition.lengthSq()
+			? new Vec3(localPosition.x, localPosition.y, localPosition.z)
+			: undefined
+	};
 }
 
 /** Computes 3D convex hull as a CANNON.ConvexPolyhedron. */
-function createConvexPolyhedron (object: Object3D): Shape | null {
+function createConvexPolyhedron (object: Object3D): ShapeResult | null {
 	const geometry = getGeometry(object);
 
 	if (!geometry) return null;
@@ -144,10 +152,11 @@ function createConvexPolyhedron (object: Object3D): Shape | null {
 		} while ( edge !== face.edge );
 	}
 
-	return new ConvexPolyhedron({vertices, normals});
+	const shape = new ConvexPolyhedron({vertices, normals});
+	return {shape};
 }
 
-function createCylinderShape (geometry: CylinderGeometry): Shape | null {
+function createCylinderShape (geometry: CylinderGeometry): ShapeResult | null {
 	const params = geometry.parameters;
 
 	const shape = new Cylinder(
@@ -155,20 +164,24 @@ function createCylinderShape (geometry: CylinderGeometry): Shape | null {
 		params.radiusBottom,
 		params.height,
 		params.radialSegments
-	) as unknown as PatchedCylinder;
+	);
 
 	// Include metadata for serialization.
+	// TODO(cleanup): Is this still necessary?
 	shape.radiusTop = params.radiusTop;
 	shape.radiusBottom = params.radiusBottom;
 	shape.height = params.height;
 	shape.numSegments = params.radialSegments;
 
-	shape.orientation = new CQuaternion();
-	shape.orientation.setFromEuler(MathUtils.degToRad(-90), 0, 0, 'XYZ').normalize();
-	return shape;
+	return {
+		shape,
+		orientation: new CQuaternion()
+			.setFromEuler(MathUtils.degToRad(-90), 0, 0, 'XYZ')
+			.normalize()
+	}
 }
 
-function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): Shape | null {
+function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): ShapeResult | null {
 	const axes = ['x', 'y', 'z'];
 	const majorAxis = options.cylinderAxis || 'y';
 	const minorAxes = axes.splice(axes.indexOf(majorAxis), 1) && axes;
@@ -184,7 +197,7 @@ function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): 
 	);
 
 	// Create shape.
-	const shape = new Cylinder(radius, radius, height, 12) as PatchedCylinder;
+	const shape = new Cylinder(radius, radius, height, 12);
 
 	// Include metadata for serialization.
 	shape.radiusTop = radius;
@@ -192,45 +205,48 @@ function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): 
 	shape.height = height;
 	shape.numSegments = 12;
 
-	shape.orientation = new CQuaternion();
-	shape.orientation.setFromEuler(
-		majorAxis === 'y' ? PI_2 : 0,
-		majorAxis === 'z' ? PI_2 : 0,
-		0,
-		'XYZ'
-	).normalize();
-	return shape;
+	const orientationX = majorAxis === 'y' ? PI_2 : 0;
+	const orientationY = majorAxis === 'z' ? PI_2 : 0;
+
+	return {
+		shape,
+		orientation: new CQuaternion()
+			.setFromEuler(orientationX, orientationY, 0, 'XYZ')
+			.normalize()
+	};
 }
 
-function createPlaneShape (geometry: BufferGeometry): Shape | null {
+function createPlaneShape (geometry: BufferGeometry): ShapeResult | null {
 	geometry.computeBoundingBox();
 	const box = geometry.boundingBox!;
-	return new Box(new Vec3(
+	const shape = new Box(new Vec3(
 		(box.max.x - box.min.x) / 2 || 0.1,
 		(box.max.y - box.min.y) / 2 || 0.1,
 		(box.max.z - box.min.z) / 2 || 0.1
 	));
+	return {shape};
 }
 
-function createSphereShape (geometry: SphereGeometry): Shape | null {
-	return new Sphere(geometry.parameters.radius);
+function createSphereShape (geometry: SphereGeometry): ShapeResult | null {
+	const shape = new Sphere(geometry.parameters.radius);
+	return {shape};
 }
 
-function createBoundingSphereShape (object: Object3D, options: ShapeOptions): Shape | null {
+function createBoundingSphereShape (object: Object3D, options: ShapeOptions): ShapeResult | null {
 	if (options.sphereRadius) {
-		return new Sphere(options.sphereRadius);
+		return {shape: new Sphere(options.sphereRadius)};
 	}
 	const geometry = getGeometry(object);
 	if (!geometry) return null;
 	geometry.computeBoundingSphere();
-	return new Sphere(geometry.boundingSphere!.radius);
+	return {shape: new Sphere(geometry.boundingSphere!.radius)};
 }
 
-function createTrimeshShape (geometry: BufferGeometry): Shape | null {
+function createTrimeshShape (geometry: BufferGeometry): ShapeResult | null {
 	const vertices = getVertices(geometry);
 
 	if (!vertices.length) return null;
 
 	const indices = Object.keys(vertices).map(Number);
-	return new Trimesh(vertices as unknown as number[], indices);
+	return {shape: new Trimesh(vertices as unknown as number[], indices)};
 }
