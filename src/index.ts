@@ -1,7 +1,8 @@
 import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
-import { Box3, BufferGeometry, Geometry, MathUtils, Matrix4, Mesh, Object3D, Quaternion, Vector3 } from 'three';
+import { Box3, BufferGeometry, CylinderGeometry, MathUtils, Mesh, Object3D, SphereGeometry, Vector3 } from 'three';
 import { ConvexHull } from '../lib/ConvexHull.js';
-import { CylinderParameters, PatchedBox, PatchedCylinder, PatchedGeometry, SphereParameters } from './types.js';
+import { PatchedBox, PatchedCylinder } from './types.js';
+import { getComponent, getGeometry, getVertices } from './utils.js';
 
 const PI_2 = Math.PI / 2;
 
@@ -25,7 +26,7 @@ export interface ShapeOptions {
 export const threeToCannon = function (object: Object3D, options: ShapeOptions): Shape | null {
   options = options || {};
 
-  let geometry: PatchedGeometry | null;
+  let geometry: BufferGeometry | null;
 
   if (options.type === Type.BOX) {
     return createBoundingBoxShape(object);
@@ -36,34 +37,29 @@ export const threeToCannon = function (object: Object3D, options: ShapeOptions):
   } else if (options.type === Type.HULL) {
     return createConvexPolyhedron(object);
   } else if (options.type === Type.MESH) {
-    geometry = getGeometry(object) as PatchedGeometry;
+    geometry = getGeometry(object);
     return geometry ? createTrimeshShape(geometry) : null;
   } else if (options.type) {
     throw new Error(`[CANNON.threeToCannon] Invalid type "${options.type}".`);
   }
 
-  geometry = getGeometry(object) as PatchedGeometry;
+  geometry = getGeometry(object);
   if (!geometry) return null;
 
-  var type = geometry.metadata
-    ? geometry.metadata.type
-    : geometry.type;
-
-  switch (type) {
+  switch (geometry.type) {
     case 'BoxGeometry':
     case 'BoxBufferGeometry':
       return createBoxShape(geometry);
     case 'CylinderGeometry':
     case 'CylinderBufferGeometry':
-      return createCylinderShape(geometry);
+      return createCylinderShape(geometry as CylinderGeometry);
     case 'PlaneGeometry':
     case 'PlaneBufferGeometry':
       return createPlaneShape(geometry);
     case 'SphereGeometry':
     case 'SphereBufferGeometry':
-      return createSphereShape(geometry);
+      return createSphereShape(geometry as SphereGeometry);
     case 'TubeGeometry':
-    case 'Geometry':
     case 'BufferGeometry':
       return createBoundingBoxShape(object);
     default:
@@ -76,7 +72,7 @@ export const threeToCannon = function (object: Object3D, options: ShapeOptions):
  * Shape construction
  */
 
-function createBoxShape (geometry: Geometry | BufferGeometry): Shape | null {
+function createBoxShape (geometry: BufferGeometry): Shape | null {
    const vertices = getVertices(geometry);
 
    if (!vertices.length) return null;
@@ -90,11 +86,7 @@ function createBoxShape (geometry: Geometry | BufferGeometry): Shape | null {
    ));
 }
 
-/**
- * Bounding box needs to be computed with the entire mesh, not just geometry.
- * @param  {THREE.Object3D} mesh
- * @return {CANNON.Shape}
- */
+/** Bounding box needs to be computed with the entire subtree, not just geometry. */
 function createBoundingBoxShape (object: Object3D): Shape | null {
   const clone = object.clone();
   clone.quaternion.set(0, 0, 0, 1);
@@ -118,20 +110,21 @@ function createBoundingBoxShape (object: Object3D): Shape | null {
   return shape;
 }
 
-/**
- * Computes 3D convex hull as a CANNON.ConvexPolyhedron.
- */
+/** Computes 3D convex hull as a CANNON.ConvexPolyhedron. */
 function createConvexPolyhedron (object: Object3D): Shape | null {
   const geometry = getGeometry(object);
 
-  if (!geometry || !geometry.vertices.length) return null;
+  if (!geometry) return null;
 
   // Perturb.
   const eps = 1e-4;
-  for (let i = 0; i < geometry.vertices.length; i++) {
-    geometry.vertices[i].x += (Math.random() - 0.5) * eps;
-    geometry.vertices[i].y += (Math.random() - 0.5) * eps;
-    geometry.vertices[i].z += (Math.random() - 0.5) * eps;
+  for (let i = 0; i < geometry.attributes.position.count; i++) {
+    geometry.attributes.position.setXYZ(
+      i,
+      geometry.attributes.position.getX(i) + (Math.random() - 0.5) * eps,
+      geometry.attributes.position.getY(i) + (Math.random() - 0.5) * eps,
+      geometry.attributes.position.getZ(i) + (Math.random() - 0.5) * eps,
+    );
   }
 
   // Compute the 3D convex hull.
@@ -154,10 +147,8 @@ function createConvexPolyhedron (object: Object3D): Shape | null {
   return new ConvexPolyhedron({vertices, normals});
 }
 
-function createCylinderShape (geometry: PatchedGeometry): Shape | null {
-  var params: CylinderParameters = geometry.metadata
-    ? geometry.metadata.parameters as CylinderParameters
-    : geometry.parameters! as CylinderParameters;
+function createCylinderShape (geometry: CylinderGeometry): Shape | null {
+  var params = geometry.parameters;
 
   var shape = new Cylinder(
     params.radiusTop,
@@ -211,16 +202,7 @@ function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): 
   return shape;
 }
 
-function getComponent(v: Vector3, component: string) {
-  switch(component) {
-    case 'x': return v.x;
-    case 'y': return v.y;
-    case 'z': return v.z;
-  }
-  throw new Error(`Unexpected component ${component}`);
-}
-
-function createPlaneShape (geometry: Geometry): Shape | null {
+function createPlaneShape (geometry: BufferGeometry): Shape | null {
   geometry.computeBoundingBox();
   var box = geometry.boundingBox!;
   return new Box(new Vec3(
@@ -230,11 +212,8 @@ function createPlaneShape (geometry: Geometry): Shape | null {
   ));
 }
 
-function createSphereShape (geometry: PatchedGeometry): Shape | null {
-  var params = geometry.metadata
-    ? geometry.metadata.parameters as SphereParameters
-    : geometry.parameters! as SphereParameters;
-  return new Sphere(params.radius);
+function createSphereShape (geometry: SphereGeometry): Shape | null {
+  return new Sphere(geometry.parameters.radius);
 }
 
 function createBoundingSphereShape (object: Object3D, options: ShapeOptions): Shape | null {
@@ -247,103 +226,11 @@ function createBoundingSphereShape (object: Object3D, options: ShapeOptions): Sh
   return new Sphere(geometry.boundingSphere!.radius);
 }
 
-function createTrimeshShape (geometry: Geometry): Shape | null {
+function createTrimeshShape (geometry: BufferGeometry): Shape | null {
   var vertices = getVertices(geometry);
 
   if (!vertices.length) return null;
 
   var indices = Object.keys(vertices).map(Number);
   return new Trimesh(vertices as unknown as number[], indices);
-}
-
-/******************************************************************************
- * Utils
- */
-
-/**
- * Returns a single geometry for the given object. If the object is compound,
- * its geometries are automatically merged.
- */
-function getGeometry (object: Object3D): Geometry | null {
-  var mesh,
-      meshes = getMeshes(object),
-      tmp = new Geometry() as PatchedGeometry,
-      combined = new Geometry();
-
-  if (meshes.length === 0) return null;
-
-  // Apply scale  – it can't easily be applied to a CANNON.Shape later.
-  if (meshes.length === 1) {
-    const position = new Vector3(),
-        quaternion = new Quaternion(),
-        scale = new Vector3();
-    if ((meshes[0].geometry as BufferGeometry).isBufferGeometry) {
-      const _g = meshes[0].geometry as BufferGeometry;
-      if (_g.attributes.position && _g.attributes.position.itemSize > 2) {
-        tmp.fromBufferGeometry(_g);
-      }
-    } else {
-      tmp = meshes[0].geometry.clone() as PatchedGeometry;
-    }
-    tmp.metadata = (meshes[0].geometry as PatchedGeometry).metadata;
-    meshes[0].updateMatrixWorld();
-    meshes[0].matrixWorld.decompose(position, quaternion, scale);
-    return tmp.scale(scale.x, scale.y, scale.z);
-  }
-
-  // Recursively merge geometry, preserving local transforms.
-  while ((mesh = meshes.pop())) {
-    mesh.updateMatrixWorld();
-    if ((mesh.geometry as BufferGeometry).isBufferGeometry) {
-      if ((mesh.geometry as BufferGeometry).attributes.position
-          && (mesh.geometry as BufferGeometry).attributes.position.itemSize > 2) {
-        const tmpGeom = new Geometry();
-        tmpGeom.fromBufferGeometry(mesh.geometry as BufferGeometry);
-        combined.merge(tmpGeom, mesh.matrixWorld);
-        tmpGeom.dispose();
-      }
-    } else {
-      combined.merge(mesh.geometry as Geometry, mesh.matrixWorld);
-    }
-  }
-
-  const matrix = new Matrix4();
-  matrix.scale(object.scale);
-  combined.applyMatrix4(matrix);
-  return combined;
-}
-
-function getVertices (geometry: Geometry | BufferGeometry): Float32Array {
-  if ((geometry as BufferGeometry).isBufferGeometry) {
-    geometry = geometry as BufferGeometry;
-  } else if ((geometry as PatchedGeometry).toBufferGeometry) {
-    geometry = (geometry as PatchedGeometry).toBufferGeometry() as BufferGeometry;
-  } else {
-    geometry = new BufferGeometry().fromGeometry(geometry as PatchedGeometry);
-  }
-
-  const position = geometry.attributes.position;
-  const vertices = new Float32Array(position.count * 3);
-  for (let i = 0; i < position.count; i += 3) {
-    vertices[i] = position.getX(i);
-    vertices[i + 1] = position.getY(i);
-    vertices[i + 2] = position.getZ(i);
-  }
-  return vertices;
-}
-
-/**
- * Returns a flat array of THREE.Mesh instances from the given object. If
- * nested transformations are found, they are applied to child meshes
- * as mesh.userData.matrix, so that each mesh has its position/rotation/scale
- * independently of all of its parents except the top-level object.
- */
-function getMeshes (object: Object3D): Mesh[] {
-  const meshes: Mesh[] = [];
-  object.traverse(function (o) {
-    if ((o as Mesh).isMesh) {
-      meshes.push(o as Mesh);
-    }
-  });
-  return meshes;
 }

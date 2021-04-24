@@ -1,5 +1,5 @@
 import { Box, Cylinder, Quaternion, Sphere } from 'cannon-es';
-import { BufferGeometry, Geometry, Vector3 } from 'three';
+import { Vector3 } from 'three';
 
 export interface SphereParameters {
     radius: number;
@@ -12,28 +12,20 @@ export interface CylinderParameters {
     radialSegments: number,
 }
 
-export interface PatchedGeometry extends Geometry {
-    metadata?: {
-        type: string,
-        parameters: CylinderParameters | SphereParameters
-    };
-    parameters?: CylinderParameters | SphereParameters;
-
-    // Exists in Geometry class; missing from types.
-    toBufferGeometry: () => BufferGeometry;
-}
-
 export interface PatchedBox extends Box {
+    // TODO these should be from the same package...
     offset: Vector3;
     orientation: Quaternion;
 }
 
 export interface PatchedSphere extends Sphere {
+    // TODO these should be from the same package...
     offset: Vector3;
     orientation: Quaternion;
 }
 
 export interface PatchedCylinder extends Cylinder {
+    // TODO these should be from the same package...
     offset: Vector3;
     orientation: Quaternion;
 }
