@@ -359,8 +359,10 @@ function getVertices (geometry: Geometry | BufferGeometry): Float32Array {
   let _geometry = geometry as unknown as AnyGeometry;
   if (_geometry.isBufferGeometry) {
     geometry = geometry as BufferGeometry;
-  } else {
+  } else if ((geometry as PatchedGeometry).toBufferGeometry) {
     geometry = (geometry as PatchedGeometry).toBufferGeometry() as BufferGeometry;
+  } else {
+    geometry = new BufferGeometry().fromGeometry(geometry as PatchedGeometry);
   }
 
   const position = geometry.attributes.position;
