@@ -8,7 +8,7 @@ global.performance = performance;
 const test = require('tape');
 const THREE = global.THREE = require('three');
 const { Shape } = require('cannon-es');
-const threeToCannon = require('../').threeToCannon;
+const { threeToCannon, Type } = require('../');
 
 const object = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10));
 
@@ -17,7 +17,7 @@ function equalsApprox ( a, b ) {
 }
 
 test('shape - box', function (t) {
-  var box = threeToCannon(object, {type: threeToCannon.Type.BOX});
+  var box = threeToCannon(object, {type: Type.BOX});
 
   t.equal( box.type, Shape.types.BOX, 'box.type' );
   t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
@@ -28,7 +28,7 @@ test('shape - box', function (t) {
 });
 
 test('shape - sphere', function (t) {
-  const sphere = threeToCannon(object, {type: threeToCannon.Type.SPHERE});
+  const sphere = threeToCannon(object, {type: Type.SPHERE});
 
   t.equal( sphere.type, Shape.types.SPHERE, 'sphere.type' );
   t.ok( equalsApprox( sphere.radius, 8.660254 ), 'sphere.radius' );
@@ -37,7 +37,7 @@ test('shape - sphere', function (t) {
 });
 
 test('shape - cylinder', function (t) {
-  const cylinder = threeToCannon(object, {type: threeToCannon.Type.CYLINDER});
+  const cylinder = threeToCannon(object, {type: Type.CYLINDER});
 
   t.equal( cylinder.type, Shape.types.CYLINDER, 'cylinder.type' );
   t.equal( cylinder.radiusTop, 5, 'cylinder.radiusTop' );
@@ -52,7 +52,7 @@ test('shape - cylinder', function (t) {
 });
 
 test('shape - hull', function (t) {
-  const hull = threeToCannon(object, {type: threeToCannon.Type.HULL});
+  const hull = threeToCannon(object, {type: Type.HULL});
 
   t.equal( hull.type, Shape.types.CONVEXPOLYHEDRON, 'hull.type' );
   t.equals( hull.boundingSphereRadius.toFixed( 3 ), '8.660', 'hull.boundingSphereRadius' );
@@ -61,7 +61,7 @@ test('shape - hull', function (t) {
 });
 
 test('shape - mesh', function (t) {
-  const mesh = threeToCannon(object, {type: threeToCannon.Type.MESH});
+  const mesh = threeToCannon(object, {type: Type.MESH});
 
   t.equal( mesh.type, Shape.types.TRIMESH, 'mesh.type' );
   t.equals( mesh.boundingSphereRadius.toFixed( 3 ), '8.660', 'mesh.boundingSphereRadius' );
