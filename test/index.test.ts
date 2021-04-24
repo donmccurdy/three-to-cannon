@@ -4,7 +4,8 @@ require = require('esm')(module);
 
 import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh } from 'cannon-es';
 import * as test from 'tape';
-import { BoxBufferGeometry, Group, Matrix4, Mesh } from 'three';
+import { BoxBufferGeometry, BufferGeometry, Group, Matrix4, Mesh, Vector3 } from 'three';
+import { Geometry } from 'three/examples/jsm/deprecated/Geometry';
 import { ShapeResult, Type, threeToCannon } from '../';
 
 const object = new Mesh(new BoxBufferGeometry(10, 10, 10));
@@ -90,6 +91,25 @@ test('transform - position', function (t) {
 	t.equal( offset!.y, 50, 'box.offset.y' );
 	t.equal( offset!.z, 0, 'box.offset.z' );
 	t.notOk( orientation, 'box.orientation' );
+
+	t.end();
+});
+
+test('legacy geometry', function (t) {
+	const geometry = new Geometry();
+	geometry.vertices.push(
+		new Vector3(2, 2, 2),
+		new Vector3(0, 0, 0),
+		new Vector3(-2, -2, -2),
+	);
+	const mesh = new Mesh(geometry as unknown as BufferGeometry);
+
+	const {shape: box} = threeToCannon(mesh, {type: Type.BOX}) as ShapeResult<Box>;
+
+	t.equal( box.type, Shape.types.BOX, 'box.type' );
+	t.equal( box.halfExtents.x, 2, 'box.halfExtents.x' );
+	t.equal( box.halfExtents.y, 2, 'box.halfExtents.y' );
+	t.equal( box.halfExtents.z, 2, 'box.halfExtents.z' );
 
 	t.end();
 });

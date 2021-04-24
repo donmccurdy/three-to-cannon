@@ -1,5 +1,5 @@
 import { BufferAttribute, BufferGeometry, Mesh, Object3D, Quaternion, Vector3 } from 'three';
-import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import type { Geometry } from 'three/examples/jsm/deprecated/Geometry';
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();
@@ -14,15 +14,65 @@ export function getGeometry (object: Object3D): BufferGeometry | null {
 	const meshes = getMeshes(object);
 	if (meshes.length === 0) return null;
 
+	// Single mesh. Return, preserving original type.
+	if (meshes.length === 1) {
+		return normalizeGeometry(meshes[0]);
+	}
+
+	// Multiple meshes. Merge and return.
 	let mesh: Mesh | undefined;
 	const geometries: BufferGeometry[] = [];
 	while ((mesh = meshes.pop())) {
-		const geometry = mergeVertices(mesh.geometry);
-		mesh.updateMatrixWorld();
-		mesh.matrixWorld.decompose(_v1, _q1, _v2);
-		geometries.push(geometry.scale(_v2.x, _v2.y, _v2.z));
+		geometries.push(simplifyGeometry(normalizeGeometry(mesh)));
 	}
-	return BufferGeometryUtils.mergeBufferGeometries(geometries);
+
+	return mergeBufferGeometries(geometries);
+}
+
+function normalizeGeometry (mesh: Mesh): BufferGeometry {
+	let geometry: BufferGeometry = mesh.geometry;
+	if ((geometry as unknown as Geometry).toBufferGeometry) {
+		geometry = (geometry as unknown as Geometry).toBufferGeometry();
+	} else {
+		// Preserve original type, e.g. CylinderBufferGeometry.
+		geometry = geometry.clone();
+	}
+
+	mesh.updateMatrixWorld();
+	mesh.matrixWorld.decompose(_v1, _q1, _v2);
+	geometry.scale(_v2.x, _v2.y, _v2.z);
+	return geometry;
+}
+
+/**
+ * Greatly simplified version of BufferGeometryUtils.mergeBufferGeometries.
+ * Because we only care about the vertex positions, and not the indices or
+ * other attributes, we throw everything else away.
+ */
+function mergeBufferGeometries (geometries: BufferGeometry[]): BufferGeometry {
+	let vertexCount = 0;
+	for (let i = 0; i < geometries.length; i++) {
+		const position = geometries[i].attributes.position;
+		if (position && position.itemSize === 3) {
+			vertexCount += position.count;
+		}
+	}
+
+	const positionArray = new Float32Array(vertexCount * 3);
+
+	let positionOffset = 0;
+	for (let i = 0; i < geometries.length; i++) {
+		const position = geometries[i].attributes.position;
+		if (position && position.itemSize === 3) {
+			for (let j = 0; j < position.count; j++) {
+				positionArray[positionOffset++] = position.getX(j);
+				positionArray[positionOffset++] = position.getY(j);
+				positionArray[positionOffset++] = position.getZ(j);
+			}
+		}
+	}
+
+	return new BufferGeometry().setAttribute('position', new BufferAttribute(positionArray, 3));
 }
 
 export function getVertices (geometry: BufferGeometry): Float32Array {
@@ -69,7 +119,7 @@ export function getComponent(v: Vector3, component: string): number {
 * @param {number} tolerance
 * @return {THREE.BufferGeometry>}
 */
-function mergeVertices (geometry: BufferGeometry, tolerance = 1e-4): BufferGeometry {
+function simplifyGeometry (geometry: BufferGeometry, tolerance = 1e-4): BufferGeometry {
 
 	tolerance = Math.max( tolerance, Number.EPSILON );
 

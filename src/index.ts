@@ -205,13 +205,13 @@ function createBoundingCylinderShape (object: Object3D, options: ShapeOptions): 
 	shape.height = height;
 	shape.numSegments = 12;
 
-	const orientationX = majorAxis === 'y' ? PI_2 : 0;
-	const orientationY = majorAxis === 'z' ? PI_2 : 0;
+	const eulerX = majorAxis === 'y' ? PI_2 : 0;
+	const eulerY = majorAxis === 'z' ? PI_2 : 0;
 
 	return {
 		shape,
 		orientation: new CQuaternion()
-			.setFromEuler(orientationX, orientationY, 0, 'XYZ')
+			.setFromEuler(eulerX, eulerY, 0, 'XYZ')
 			.normalize()
 	};
 }
