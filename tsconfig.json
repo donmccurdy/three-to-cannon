@@ -1,5 +1,5 @@
 {
-  "include": ["./*.ts"],
+  "include": ["./*.ts", "src/*.ts"],
   "compilerOptions": {
     "moduleResolution": "node",
     "lib": ["es6", "dom"],

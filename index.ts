@@ -1,6 +1,7 @@
 import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
 import { Box3, BufferGeometry, Geometry, MathUtils, Matrix4, Mesh, Object3D, Quaternion, Vector3 } from 'three';
 import { ConvexHull } from './lib/ConvexHull.js';
+import { CylinderParameters, PatchedBox, PatchedCylinder, PatchedGeometry, SphereParameters } from './src/types.js';
 
 const PI_2 = Math.PI / 2;
 
@@ -17,49 +18,6 @@ export interface ShapeOptions {
   cylinderAxis?: 'x' | 'y' | 'z',
   sphereRadius?: number,
 };
-
-type AnyGeometry = {
-  isGeometry: boolean,
-  isBufferGeometry: boolean,
-  metadata: Record<string, unknown>,
-};
-
-interface SphereParameters {
-  radius: number;
-}
-
-interface CylinderParameters {
-  radiusTop: number,
-  radiusBottom: number,
-  height: number,
-  radialSegments: number,
-}
-
-interface PatchedGeometry extends Geometry {
-  metadata?: {
-    type: string,
-    parameters: CylinderParameters | SphereParameters
-  };
-  parameters?: CylinderParameters | SphereParameters;
-
-  // Exists in Geometry class; missing from types.
-  toBufferGeometry: () => BufferGeometry;
-}
-
-interface PatchedBox extends Box {
-  offset: Vector3;
-  orientation: CQuaternion;
-}
-
-interface PatchedSphere extends Sphere {
-  offset: Vector3;
-  orientation: CQuaternion;
-}
-
-interface PatchedCylinder extends Cylinder {
-  offset: Vector3;
-  orientation: CQuaternion;
-}
 
 /**
  * Given a THREE.Object3D instance, creates a corresponding CANNON shape.
@@ -356,8 +314,7 @@ function getGeometry (object: Object3D): Geometry | null {
 }
 
 function getVertices (geometry: Geometry | BufferGeometry): Float32Array {
-  let _geometry = geometry as unknown as AnyGeometry;
-  if (_geometry.isBufferGeometry) {
+  if ((geometry as BufferGeometry).isBufferGeometry) {
     geometry = geometry as BufferGeometry;
   } else if ((geometry as PatchedGeometry).toBufferGeometry) {
     geometry = (geometry as PatchedGeometry).toBufferGeometry() as BufferGeometry;
