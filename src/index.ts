@@ -137,22 +137,25 @@ function createConvexPolyhedron (object: Object3D): ShapeResult | null {
 
 	// Compute the 3D convex hull.
 	const hull = new ConvexHull().setFromObject(new Mesh(geometry));
-	const faces = hull.faces;
+	const hullFaces = hull.faces;
 	const vertices = [];
-	const normals = [];
+	const faces: number[][] = [];
 
-	for (let i = 0; i < faces.length; i++) {
-		const face = faces[ i ];
-		let edge = face.edge;
+	for (let i = 0; i < hullFaces.length; i++) {
+		const hullFace = hullFaces[ i ];
+		const face: number[] = [];
+		faces.push(face);
+
+		let edge = hullFace.edge;
 		do {
 			const point = edge.head().point;
 			vertices.push( new Vec3(point.x, point.y, point.z) );
-			normals.push( new Vec3(face.normal.x, face.normal.y, face.normal.z) );
+			face.push(vertices.length - 1);
 			edge = edge.next;
-		} while ( edge !== face.edge );
+		} while ( edge !== hullFace.edge );
 	}
 
-	const shape = new ConvexPolyhedron({vertices, normals});
+	const shape = new ConvexPolyhedron({vertices, faces});
 	return {shape};
 }
 
