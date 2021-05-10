@@ -7,22 +7,12 @@
 
 Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplified shapes.
 
-## Usage
+## API
 
 Installation:
 
 ```js
 npm install --save three-to-cannon
-```
-
-Import:
-
-```js
-// ES6
-import { threeToCannon } from 'three-to-cannon';
-
-// CommonJS
-const { threeToCannon } = require('three-to-cannon');
 ```
 
 Use:
