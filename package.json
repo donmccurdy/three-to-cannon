@@ -1,6 +1,6 @@
 {
   "name": "three-to-cannon",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
   "main": "dist/three-to-cannon.js",
   "module": "dist/three-to-cannon.modern.js",
