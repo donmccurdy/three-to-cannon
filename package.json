@@ -41,17 +41,17 @@
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
-    "@typescript-eslint/eslint-plugin": "^4.16.1",
-    "@typescript-eslint/parser": "^4.22.0",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
     "cannon-es": "^0.17.0",
-    "eslint": "^7.25.0",
+    "eslint": "^7.26.0",
     "esm": "^3.2.25",
     "microbundle": "^0.13.0",
     "tap-spec": "^5.0.0",
     "tape": "^5.2.2",
     "three": "^0.128.0",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.4"
   },
   "files": [
     "dist/",
