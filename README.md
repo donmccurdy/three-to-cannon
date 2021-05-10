@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/three-to-cannon/blob/master/LICENSE)
 [![Build Status](https://github.com/donmccurdy/three-to-cannon/workflows/build/badge.svg?branch=master&event=push)](https://github.com/donmccurdy/three-to-cannon/actions?query=workflow%3Abuild)
 
-Convert a THREE.Mesh to a CANNON.Shape, and optional optimizations with simplified shapes.
+Convert a [THREE.Mesh](https://threejs.org/docs/?q=mesh#api/en/objects/Mesh) or [THREE.Object3D](https://threejs.org/docs/?q=object3d#api/en/core/Object3D) to a [CANNON.Shape](https://pmndrs.github.io/cannon-es/docs/classes/shape.html), and optional optimizations with simplified shapes.
 
 ## API
 
