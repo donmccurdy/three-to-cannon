@@ -22,27 +22,29 @@ Import:
 import { threeToCannon } from 'three-to-cannon';
 
 // CommonJS
-threeToCannon = require('three-to-cannon').threeToCannon;
+const { threeToCannon } = require('three-to-cannon');
 ```
 
 Use:
 
 ```js
+import { threeToCannon, ShapeType } from 'three-to-cannon';
+
 // Automatic.
 const shape = threeToCannon(object3D);
 
 // Bounding box (AABB).
-const shape = threeToCannon(object3D, {type: threeToCannon.Type.BOX});
+const shape = threeToCannon(object3D, {type: ShapeType.BOX});
 
 // Bounding sphere.
-const shape = threeToCannon(object3D, {type: threeToCannon.Type.SPHERE});
+const shape = threeToCannon(object3D, {type: ShapeType.SPHERE});
 
 // Cylinder.
-const shape = threeToCannon(object3D, {type: threeToCannon.Type.CYLINDER});
+const shape = threeToCannon(object3D, {type: ShapeType.CYLINDER});
 
 // Convex hull.
-const shape = threeToCannon(object3D, {type: threeToCannon.Type.HULL});
+const shape = threeToCannon(object3D, {type: ShapeType.HULL});
 
 // Mesh (not recommended).
-const shape = threeToCannon(object3D, {type: threeToCannon.Type.MESH});
+const shape = threeToCannon(object3D, {type: ShapeType.MESH});
 ```
