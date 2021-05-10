@@ -3,7 +3,7 @@
 [![Latest NPM release](https://img.shields.io/npm/v/three-to-cannon.svg)](https://www.npmjs.com/package/three-to-cannon)
 [![Minzipped size](https://badgen.net/bundlephobia/minzip/three-to-cannon)](https://bundlephobia.com/result?p=three-to-cannon)
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/three-to-cannon/blob/master/LICENSE)
-[![Build Status](https://github.com/donmccurdy/three-to-cannon/workflows/build/badge.svg?branch=master&event=push)](https://github.com/donmccurdy/three-to-cannon/actions?query=workflow%3Abuild)
+[![Build Status](https://github.com/donmccurdy/three-to-cannon/workflows/build/badge.svg?branch=main&event=push)](https://github.com/donmccurdy/three-to-cannon/actions?query=workflow%3Abuild)
 
 Convert a [THREE.Mesh](https://threejs.org/docs/?q=mesh#api/en/objects/Mesh) or [THREE.Object3D](https://threejs.org/docs/?q=object3d#api/en/core/Object3D) to a [CANNON.Shape](https://pmndrs.github.io/cannon-es/docs/classes/shape.html), with optimizations to simplified bounding shapes (AABB, sphere, etc.).
 
