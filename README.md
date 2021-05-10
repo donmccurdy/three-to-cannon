@@ -28,23 +28,45 @@ const { threeToCannon } = require('three-to-cannon');
 Use:
 
 ```js
+/****************************************
+ * Import:
+ */
+
+// ES6
 import { threeToCannon, ShapeType } from 'three-to-cannon';
 
+// CommonJS
+const { threeToCannon, ShapeType } = require('three-to-cannon');
+
+/****************************************
+ * Generate a CANNON.Shape:
+ */
+
 // Automatic.
-const shape = threeToCannon(object3D);
+const result = threeToCannon(object3D);
 
 // Bounding box (AABB).
-const shape = threeToCannon(object3D, {type: ShapeType.BOX});
+const result = threeToCannon(object3D, {type: ShapeType.BOX});
 
 // Bounding sphere.
-const shape = threeToCannon(object3D, {type: ShapeType.SPHERE});
+const result = threeToCannon(object3D, {type: ShapeType.SPHERE});
 
 // Cylinder.
-const shape = threeToCannon(object3D, {type: ShapeType.CYLINDER});
+const result = threeToCannon(object3D, {type: ShapeType.CYLINDER});
 
 // Convex hull.
-const shape = threeToCannon(object3D, {type: ShapeType.HULL});
+const result = threeToCannon(object3D, {type: ShapeType.HULL});
 
 // Mesh (not recommended).
-const shape = threeToCannon(object3D, {type: ShapeType.MESH});
+const result = threeToCannon(object3D, {type: ShapeType.MESH});
+
+/****************************************
+ * Using the result:
+ */
+
+// Result object includes a CANNON.Shape instance, and (optional)
+// an offset or quaternion for that shape.
+const {shape, offset, quaternion} = result;
 ```
+
+See further documentation on the [CANNON.Shape](https://pmndrs.github.io/cannon-es/docs/classes/shape.html) class.
