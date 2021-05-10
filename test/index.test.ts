@@ -6,7 +6,7 @@ import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh } from 'cannon-
 import * as test from 'tape';
 import { BoxBufferGeometry, BufferGeometry, Group, Matrix4, Mesh, Vector3 } from 'three';
 import { Geometry } from 'three/examples/jsm/deprecated/Geometry';
-import { ShapeResult, Type, threeToCannon } from '../';
+import { ShapeResult, ShapeType, threeToCannon } from '../';
 
 const object = new Mesh(new BoxBufferGeometry(10, 10, 10));
 
@@ -15,7 +15,7 @@ function equalsApprox (a: number, b: number) {
 }
 
 test('shape - box', function (t) {
-	const {shape: box} = threeToCannon(object, {type: Type.BOX}) as ShapeResult<Box>;
+	const {shape: box} = threeToCannon(object, {type: ShapeType.BOX}) as ShapeResult<Box>;
 
 	t.equal( box.type, Shape.types.BOX, 'box.type' );
 	t.equal( box.halfExtents.x, 5, 'box.halfExtents.x' );
@@ -26,7 +26,7 @@ test('shape - box', function (t) {
 });
 
 test('shape - sphere', function (t) {
-	const {shape: sphere} = threeToCannon(object, {type: Type.SPHERE}) as ShapeResult<Sphere>;
+	const {shape: sphere} = threeToCannon(object, {type: ShapeType.SPHERE}) as ShapeResult<Sphere>;
 
 	t.equal( sphere.type, Shape.types.SPHERE, 'sphere.type' );
 	t.ok( equalsApprox( sphere.radius, 8.660254 ), 'sphere.radius' );
@@ -38,7 +38,7 @@ test('shape - cylinder', function (t) {
 	const {
 		shape: cylinder,
 		orientation
-	} = threeToCannon(object, {type: Type.CYLINDER}) as ShapeResult<Cylinder>;
+	} = threeToCannon(object, {type: ShapeType.CYLINDER}) as ShapeResult<Cylinder>;
 
 	t.equal( cylinder.type, Shape.types.CYLINDER, 'cylinder.type' );
 	t.equal( cylinder.radiusTop, 5, 'cylinder.radiusTop' );
@@ -54,7 +54,8 @@ test('shape - cylinder', function (t) {
 });
 
 test('shape - hull', function (t) {
-	const {shape: hull} = threeToCannon(object, {type: Type.HULL}) as ShapeResult<ConvexPolyhedron>;
+	const {shape: hull}
+		= threeToCannon(object, {type: ShapeType.HULL}) as ShapeResult<ConvexPolyhedron>;
 
 	t.equal( hull.type, Shape.types.CONVEXPOLYHEDRON, 'hull.type' );
 	t.equals( hull.boundingSphereRadius.toFixed( 3 ), '8.660', 'hull.boundingSphereRadius' );
@@ -63,7 +64,7 @@ test('shape - hull', function (t) {
 });
 
 test('shape - mesh', function (t) {
-	const {shape: mesh} = threeToCannon(object, {type: Type.MESH}) as ShapeResult<Trimesh>;
+	const {shape: mesh} = threeToCannon(object, {type: ShapeType.MESH}) as ShapeResult<Trimesh>;
 
 	t.equal( mesh.type, Shape.types.TRIMESH, 'mesh.type' );
 	t.equals( mesh.boundingSphereRadius.toFixed( 3 ), '8.660', 'mesh.boundingSphereRadius' );
@@ -104,7 +105,7 @@ test('legacy geometry', function (t) {
 	);
 	const mesh = new Mesh(geometry as unknown as BufferGeometry);
 
-	const {shape: box} = threeToCannon(mesh, {type: Type.BOX}) as ShapeResult<Box>;
+	const {shape: box} = threeToCannon(mesh, {type: ShapeType.BOX}) as ShapeResult<Box>;
 
 	t.equal( box.type, Shape.types.BOX, 'box.type' );
 	t.equal( box.halfExtents.x, 2, 'box.halfExtents.x' );

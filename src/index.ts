@@ -5,7 +5,7 @@ import { getComponent, getGeometry, getVertices } from './utils.js';
 
 const PI_2 = Math.PI / 2;
 
-export enum Type {
+export enum ShapeType {
 	BOX = 'Box',
 	CYLINDER = 'Cylinder',
 	SPHERE = 'Sphere',
@@ -14,7 +14,7 @@ export enum Type {
 }
 
 export interface ShapeOptions {
-	type?: Type,
+	type?: ShapeType,
 	cylinderAxis?: 'x' | 'y' | 'z',
 	sphereRadius?: number,
 }
@@ -31,15 +31,15 @@ export interface ShapeResult<T extends Shape = Shape> {
 export const threeToCannon = function (object: Object3D, options: ShapeOptions = {}): ShapeResult | null {
 	let geometry: BufferGeometry | null;
 
-	if (options.type === Type.BOX) {
+	if (options.type === ShapeType.BOX) {
 		return createBoundingBoxShape(object);
-	} else if (options.type === Type.CYLINDER) {
+	} else if (options.type === ShapeType.CYLINDER) {
 		return createBoundingCylinderShape(object, options);
-	} else if (options.type === Type.SPHERE) {
+	} else if (options.type === ShapeType.SPHERE) {
 		return createBoundingSphereShape(object, options);
-	} else if (options.type === Type.HULL) {
+	} else if (options.type === ShapeType.HULL) {
 		return createConvexPolyhedron(object);
-	} else if (options.type === Type.MESH) {
+	} else if (options.type === ShapeType.MESH) {
 		geometry = getGeometry(object);
 		return geometry ? createTrimeshShape(geometry) : null;
 	} else if (options.type) {
