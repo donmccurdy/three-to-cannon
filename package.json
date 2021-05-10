@@ -5,7 +5,7 @@
   "main": "dist/three-to-cannon.js",
   "module": "dist/three-to-cannon.modern.js",
   "source": "src/index.ts",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "test": "ts-node node_modules/tape/bin/tape test/*.test.ts | tap-spec",
     "watch": "microbundle watch --format modern,cjs,umd --globals three=THREE --external three",
