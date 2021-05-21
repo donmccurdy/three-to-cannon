@@ -37,13 +37,13 @@
     "three": ">=0.125.x"
   },
   "dependencies": {
-    "@types/three": "^0.127.1"
+    "@types/three": "^0.128.0"
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
-    "cannon-es": "^0.17.0",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
+    "cannon-es": "^0.17.1",
     "eslint": "^7.26.0",
     "esm": "^3.2.25",
     "microbundle": "^0.13.0",
