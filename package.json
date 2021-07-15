@@ -46,7 +46,7 @@
     "cannon-es": "^0.17.1",
     "eslint": "^7.26.0",
     "esm": "^3.2.25",
-    "microbundle": "^0.13.0",
+    "microbundle": "0.13.3",
     "tap-spec": "^5.0.0",
     "tape": "^5.2.2",
     "three": "^0.128.0",
