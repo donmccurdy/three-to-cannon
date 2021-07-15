@@ -41,8 +41,8 @@
   },
   "devDependencies": {
     "@types/tape": "^4.13.0",
-    "@typescript-eslint/eslint-plugin": "^4.24.0",
-    "@typescript-eslint/parser": "^4.24.0",
+    "@typescript-eslint/eslint-plugin": "4.24.0",
+    "@typescript-eslint/parser": "4.24.0",
     "cannon-es": "^0.17.1",
     "eslint": "^7.26.0",
     "esm": "^3.2.25",
