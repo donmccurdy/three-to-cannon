@@ -37,7 +37,7 @@
     "three": ">=0.125.x"
   },
   "dependencies": {
-    "@types/three": "^0.128.0"
+    "@types/three": ">=0.125.x"
   },
   "devDependencies": {
     "@types/tape": "4.13.1",
