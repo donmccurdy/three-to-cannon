@@ -40,7 +40,7 @@
     "@types/three": "^0.128.0"
   },
   "devDependencies": {
-    "@types/tape": "^4.13.0",
+    "@types/tape": "4.13.1",
     "@typescript-eslint/eslint-plugin": "4.24.0",
     "@typescript-eslint/parser": "4.24.0",
     "cannon-es": "^0.17.1",
