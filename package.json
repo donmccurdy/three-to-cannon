@@ -43,7 +43,7 @@
     "@types/tape": "4.13.1",
     "@typescript-eslint/eslint-plugin": "4.24.0",
     "@typescript-eslint/parser": "4.24.0",
-    "cannon-es": "^0.17.1",
+    "cannon-es": "0.18.0",
     "eslint": "7.30.0",
     "esm": "^3.2.25",
     "microbundle": "0.13.3",
