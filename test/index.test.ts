@@ -1,9 +1,9 @@
 // See: https://github.com/substack/tape/issues/514
 // eslint-disable-next-line no-global-assign,@typescript-eslint/no-var-requires
-require = require('esm')(module);
+// require = require('esm')(module);
 
 import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh } from 'cannon-es';
-import * as test from 'tape';
+import { test } from 'tap';
 import { BoxBufferGeometry, BufferGeometry, Group, Matrix4, Mesh, Vector3 } from 'three';
 import { Geometry } from 'three/examples/jsm/deprecated/Geometry';
 import { ShapeResult, ShapeType, threeToCannon } from '../';

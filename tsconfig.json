@@ -4,6 +4,8 @@
     "lib": ["es6", "dom"],
     "target": "es6",
     "declaration": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
     "typeRoots": ["node_modules/@types"],
     "strict": true,
   },

@@ -7,7 +7,7 @@
   "source": "src/index.ts",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "test": "ts-node node_modules/tape/bin/tape test/*.test.ts | tap-spec",
+    "test": "tap test/*.test.ts --ts | tap-spec",
     "watch": "microbundle watch --format modern,cjs,umd --globals three=THREE --external three",
     "dist": "microbundle --format modern,cjs,umd --globals three=THREE --external three",
     "preversion": "npm run dist && npm test",
@@ -40,6 +40,7 @@
     "@types/three": ">=0.125.x"
   },
   "devDependencies": {
+    "@types/tap": "^15.0.5",
     "@types/tape": "4.13.1",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
@@ -47,9 +48,10 @@
     "eslint": "7.30.0",
     "esm": "3.2.25",
     "microbundle": "0.13.3",
+    "tap": "^15.0.9",
     "tap-spec": "5.0.0",
     "tape": "5.2.2",
-    "three": "0.128.0",
+    "three": "0.130.1",
     "ts-node": "10.1.0",
     "typescript": "4.2.4"
   },
