@@ -49,7 +49,7 @@
     "microbundle": "0.13.3",
     "tap-spec": "5.0.0",
     "tape": "5.2.2",
-    "three": "0.128.0",
+    "three": "0.137.0",
     "ts-node": "10.1.0",
     "typescript": "4.3.5"
   },
