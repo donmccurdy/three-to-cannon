@@ -59,4 +59,4 @@ const result = threeToCannon(object3D, {type: ShapeType.MESH});
 const {shape, offset, quaternion} = result;
 ```
 
-See further documentation on the [CANNON.Shape](https://pmndrs.github.io/cannon-es/docs/classes/shape.html) class.
+See further documentation on the [CANNON.Shape](https://pmndrs.github.io/cannon-es/docs/classes/Shape.html) class.
