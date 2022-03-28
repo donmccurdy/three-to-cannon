@@ -44,7 +44,7 @@
     "@typescript-eslint/eslint-plugin": "5.16.0",
     "@typescript-eslint/parser": "5.16.0",
     "cannon-es": "0.18.0",
-    "eslint": "7.30.0",
+    "eslint": "8.12.0",
     "esm": "3.2.25",
     "microbundle": "0.13.3",
     "tap-spec": "5.0.0",
