@@ -32,7 +32,7 @@ const { threeToCannon, ShapeType } = require('three-to-cannon');
  * Generate a CANNON.Shape:
  */
 
-// Automatic.
+// Automatic (Usually an AABB, except obvious cases like THREE.SphereGeometry).
 const result = threeToCannon(object3D);
 
 // Bounding box (AABB).
@@ -44,10 +44,10 @@ const result = threeToCannon(object3D, {type: ShapeType.SPHERE});
 // Cylinder.
 const result = threeToCannon(object3D, {type: ShapeType.CYLINDER});
 
-// Convex hull.
+// Convex hull. 
 const result = threeToCannon(object3D, {type: ShapeType.HULL});
 
-// Mesh (not recommended).
+// Mesh (Not recommended — limitations: https://github.com/pmndrs/cannon-es/issues/21).
 const result = threeToCannon(object3D, {type: ShapeType.MESH});
 
 /****************************************
@@ -57,6 +57,9 @@ const result = threeToCannon(object3D, {type: ShapeType.MESH});
 // Result object includes a CANNON.Shape instance, and (optional)
 // an offset or quaternion for that shape.
 const {shape, offset, quaternion} = result;
+
+// Add the shape to a CANNON.Body.
+body.addShape(shape, offset, orientation);
 ```
 
 See further documentation on the [CANNON.Shape](https://pmndrs.github.io/cannon-es/docs/classes/Shape.html) class.
