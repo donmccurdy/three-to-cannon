@@ -40,18 +40,18 @@
     "@types/three": ">=0.125.x"
   },
   "devDependencies": {
-    "@types/tape": "4.13.1",
-    "@typescript-eslint/eslint-plugin": "5.16.0",
-    "@typescript-eslint/parser": "5.16.0",
+    "@types/tape": "4.13.2",
+    "@typescript-eslint/eslint-plugin": "5.27.0",
+    "@typescript-eslint/parser": "5.27.0",
     "cannon-es": "0.18.0",
-    "eslint": "8.12.0",
+    "eslint": "8.17.0",
     "esm": "3.2.25",
-    "microbundle": "0.13.3",
+    "microbundle": "0.15.0",
     "tap-spec": "5.0.0",
     "tape": "5.2.2",
     "three": "0.128.0",
-    "ts-node": "10.1.0",
-    "typescript": "4.3.5"
+    "ts-node": "10.8.1",
+    "typescript": "4.7.3"
   },
   "files": [
     "dist/",
