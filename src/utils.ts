@@ -78,10 +78,10 @@ function mergeBufferGeometries (geometries: BufferGeometry[]): BufferGeometry {
 export function getVertices (geometry: BufferGeometry): Float32Array {
 	const position = geometry.attributes.position;
 	const vertices = new Float32Array(position.count * 3);
-	for (let i = 0; i < position.count; i += 3) {
-		vertices[i] = position.getX(i);
-		vertices[i + 1] = position.getY(i);
-		vertices[i + 2] = position.getZ(i);
+	for (let i = 0; i < position.count; i++) {
+		vertices[i * 3] = position.getX(i);
+		vertices[i * 3 + 1] = position.getY(i);
+		vertices[i * 3 + 2] = position.getZ(i);
 	}
 	return vertices;
 }
