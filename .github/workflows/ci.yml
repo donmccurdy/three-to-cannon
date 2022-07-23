@@ -1,20 +1,41 @@
-name: build
-on: [push, pull_request]
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
-    env:
-      CI: true
-    steps:
-    # Setup.
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: yarn dist
-    - run: yarn test
+    build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [14.x, 18.x]
+
+        env:
+            CI: true
+            COVERAGE: ${{ matrix.node-version == '18.x' && true || false }}
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: yarn install
+            - run: yarn dist
+            - run: yarn test
+
+            # Coverage.
+            - name: Run coverage
+              if: ${{ env.COVERAGE == 'true' }}
+              run: |
+                  yarn coverage
+                  yarn coverage:report
+            - name: Report coverage
+              if: ${{ env.COVERAGE == 'true' }}
+              uses: codecov/codecov-action@v3
+              with:
+                  files: coverage/coverage.lcov
