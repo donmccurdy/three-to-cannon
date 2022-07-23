@@ -2,16 +2,24 @@
   "name": "three-to-cannon",
   "version": "4.1.0",
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
-  "main": "dist/three-to-cannon.js",
-  "module": "dist/three-to-cannon.modern.js",
-  "source": "src/index.ts",
-  "types": "dist/src/index.d.ts",
+  "type": "module",
+  "sideEffects": false,
+  "source": "./src/index.ts",
+  "types": "./dist/src/index.d.ts",
+  "main": "./dist/three-to-cannon.cjs",
+  "module": "./dist/three-to-cannon.esm.js",
+  "exports": {
+    "require": "./dist/three-to-cannon.cjs",
+    "default": "./dist/three-to-cannon.modern.js"
+  },
   "scripts": {
-    "test": "ts-node node_modules/tape/bin/tape test/*.test.ts | tap-spec",
-    "watch": "microbundle watch --format modern,cjs,umd --globals three=THREE --external three",
-    "dist": "microbundle --format modern,cjs,umd --globals three=THREE --external three",
-    "preversion": "npm run dist && npm test",
-    "postversion": "git push && git push --tags && npm publish",
+    "dist": "microbundle --format cjs,esm,modern,umd --no-compress --globals three=THREE --external three",
+    "watch": "microbundle watch --format cjs,esm,modern,umd --no-compress --globals three=THREE --external three",
+    "test": "ava test/*.test.ts",
+    "coverage": "c8 --reporter=lcov --reporter=text ava test/*.ts --tap",
+    "coverage:report": "c8 report --reporter=text-lcov > coverage/coverage.lcov",
+    "preversion": "rimraf dist/* && npm run dist && npm test",
+    "postversion": "git push && git push --tags && npm publish && yarn coverage:report",
     "lint": "eslint src/* test/* --fix"
   },
   "repository": {
@@ -37,21 +45,20 @@
     "three": ">=0.125.x"
   },
   "dependencies": {
-    "@types/three": ">=0.125.x"
+    "@types/three": ">=0.142.0"
   },
   "devDependencies": {
-    "@types/tape": "4.13.2",
-    "@typescript-eslint/eslint-plugin": "5.27.0",
-    "@typescript-eslint/parser": "5.27.0",
+    "@typescript-eslint/eslint-plugin": "5.30.7",
+    "@typescript-eslint/parser": "5.30.7",
+    "ava": "4.3.1",
+    "c8": "7.12.0",
     "cannon-es": "0.19.0",
-    "eslint": "8.17.0",
-    "esm": "3.2.25",
+    "eslint": "8.20.0",
     "microbundle": "0.15.0",
-    "tap-spec": "5.0.0",
-    "tape": "5.5.3",
-    "three": "0.128.0",
-    "ts-node": "10.8.1",
-    "typescript": "4.7.3"
+    "rimraf": "3.0.2",
+    "three": "0.140.0",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
   },
   "files": [
     "dist/",
@@ -61,5 +68,18 @@
     "LICENSE",
     "package.json",
     "package-lock.json"
-  ]
+  ],
+  "browserslist": [
+    "defaults",
+    "not IE 11",
+    "node >= 14"
+  ],
+  "ava": {
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm"
+    ]
+  }
 }
