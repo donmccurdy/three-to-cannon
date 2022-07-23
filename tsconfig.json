@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "lib": ["es6", "dom"],
-    "target": "es6",
+    "paths": {
+      "three-to-cannon": ["./"]
+    },
+    "module": "es2020",
+    "lib": ["es2020", "dom"],
+    "target": "es2020",
     "declaration": true,
     "typeRoots": ["node_modules/@types"],
     "strict": true,

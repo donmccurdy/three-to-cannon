@@ -162,7 +162,7 @@ function createSphere (params: SphereParameters): Sphere {
 
 function createConvexPolyhedron (params: ConvexPolyhedronParameters): ConvexPolyhedron {
 	const { faces, vertices: verticesArray } = params;
-	
+
 	const vertices: Vec3[] = [];
 	for (let i = 0; i < verticesArray.length; i += 3) {
 		vertices.push(new Vec3(
