@@ -1,1 +1,10 @@
-{"extends": ["github>donmccurdy/renovate-config"]}
+{
+    "extends": ["github>donmccurdy/renovate-config"],
+    "packageRules": [
+        {
+            "description": "three.js >140 prevents testing legacy Geometry support",
+            "matchPackageNames": ["three"],
+            "enabled": false
+        }
+    ]
+}
