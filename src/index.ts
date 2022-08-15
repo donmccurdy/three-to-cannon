@@ -1,6 +1,6 @@
-import { Box, Quaternion as CQuaternion, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
+import { Box, ConvexPolyhedron, Cylinder, Quaternion as CQuaternion, Shape, Sphere, Trimesh, Vec3 } from 'cannon-es';
 import { Box3, BufferGeometry, CylinderGeometry, MathUtils, Mesh, Object3D, SphereGeometry, Vector3 } from 'three';
-import { ConvexHull } from '../lib/ConvexHull.js';
+import { ConvexHull } from '../lib/ConvexHull';
 import { getComponent, getGeometry, getVertices } from './utils';
 
 const PI_2 = Math.PI / 2;
@@ -254,34 +254,23 @@ function getConvexPolyhedronParameters (object: Object3D): ShapeParameters<Shape
 		);
 	}
 
-	// Compute the 3D convex hull.
-	const hull = new ConvexHull().setFromObject(new Mesh(geometry));
-	const hullFaces = hull.faces;
-	const vertices: number[] = [];
-	const faces: number[][] = [];
+	// Compute the 3D convex hull and collect convex hull vertices and faces.
+	const { vertices: verticesArray, faces } = new ConvexHull()
+		.setFromObject(new Mesh(geometry))
+		.collectFacesAndVertices();
 
-	let currentFaceVertex = 0;
-	for (let i = 0; i < hullFaces.length; i++) {
-		const hullFace = hullFaces[ i ];
-		const face: number[] = [];
-		faces.push(face);
-
-		let edge = hullFace.edge;
-		do {
-			const point = edge.head().point;
-			vertices.push(point.x, point.y, point.z);
-			face.push(currentFaceVertex);
-			currentFaceVertex++;
-			edge = edge.next;
-		} while ( edge !== hullFace.edge );
+	const vertices = new Float32Array(verticesArray.length * 3);
+	for (let i = 0; i < verticesArray.length; i++) {
+		const { x, y, z } = verticesArray[i];
+		const v = i * 3;
+		vertices[v] = x;
+		vertices[v + 1] = y;
+		vertices[v + 2] = z;
 	}
-
-	const verticesTypedArray = new Float32Array(vertices.length);
-	verticesTypedArray.set(vertices);
 
 	return {
 		type: ShapeType.HULL,
-		params: { vertices: verticesTypedArray, faces },
+		params: { vertices, faces },
 	};
 }
 
