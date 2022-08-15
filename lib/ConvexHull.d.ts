@@ -13,4 +13,5 @@ declare class Face {
 declare class ConvexHull {
     public faces: Face[];
     setFromObject(mesh: Mesh): this;
+    collectFacesAndVertices(): { faces: number[][]; vertices: Vector3[]; }
 }
