@@ -255,22 +255,16 @@ function getConvexPolyhedronParameters (object: Object3D): ShapeParameters<Shape
 	}
 
 	// Compute the 3D convex hull and collect convex hull vertices and faces.
-	const { vertices: verticesArray, faces } = new ConvexHull()
+	const [ positions, indices ] = new ConvexHull()
 		.setFromObject(new Mesh(geometry))
-		.collectFacesAndVertices();
-
-	const vertices = new Float32Array(verticesArray.length * 3);
-	for (let i = 0; i < verticesArray.length; i++) {
-		const { x, y, z } = verticesArray[i];
-		const v = i * 3;
-		vertices[v] = x;
-		vertices[v + 1] = y;
-		vertices[v + 2] = z;
-	}
+		.toJSON();
 
 	return {
 		type: ShapeType.HULL,
-		params: { vertices, faces },
+		params: {
+			vertices: new Float32Array(positions),
+			faces: indices,
+		},
 	};
 }
 
