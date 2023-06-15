@@ -1,7 +1,7 @@
 # three-to-cannon
 
 [![Latest NPM release](https://img.shields.io/npm/v/three-to-cannon.svg)](https://www.npmjs.com/package/three-to-cannon)
-[![Minzipped size](https://badgen.net/bundlephobia/minzip/three-to-cannon)](https://bundlephobia.com/result?p=three-to-cannon)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/three-to-cannon)](https://bundlephobia.com/package/three-to-cannon)
 [![License](https://img.shields.io/badge/license-MIT-007ec6.svg)](https://github.com/donmccurdy/three-to-cannon/blob/master/LICENSE)
 [![Build Status](https://github.com/donmccurdy/three-to-cannon/workflows/build/badge.svg?branch=main&event=push)](https://github.com/donmccurdy/three-to-cannon/actions?query=workflow%3Abuild)
 [![Coverage](https://codecov.io/gh/donmccurdy/three-to-cannon/branch/main/graph/badge.svg?token=S30LCC3L04)](https://codecov.io/gh/donmccurdy/three-to-cannon)
