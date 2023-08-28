@@ -53,12 +53,12 @@
     "ava": "5.3.1",
     "c8": "8.0.1",
     "cannon-es": "0.20.0",
-    "eslint": "8.47.0",
+    "eslint": "8.48.0",
     "microbundle": "0.15.1",
     "rimraf": "5.0.1",
     "three": "0.140.0",
     "ts-node": "10.9.1",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "files": [
     "dist/",
