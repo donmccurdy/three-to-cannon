@@ -3,7 +3,7 @@
     "packageRules": [
         {
             "description": "three.js >140 prevents testing legacy Geometry support",
-            "matchPackageNames": ["three"],
+            "matchPackageNames": ["three", "@types/three"],
             "enabled": false
         }
     ]
