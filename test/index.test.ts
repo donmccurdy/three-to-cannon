@@ -1,10 +1,9 @@
 import { Box, ConvexPolyhedron, Cylinder, Shape, Sphere, Trimesh } from 'cannon-es';
 import test from 'ava';
-import { BoxBufferGeometry, BufferGeometry, Group, Matrix4, Mesh, Vector3 } from 'three';
-import { Geometry } from 'three/examples/jsm/deprecated/Geometry.js';
+import { BoxGeometry, Group, Matrix4, Mesh } from 'three';
 import { getShapeParameters, ShapeParameters, ShapeResult, ShapeType, threeToCannon } from 'three-to-cannon';
 
-const object = new Mesh(new BoxBufferGeometry(10, 10, 10));
+const object = new Mesh(new BoxGeometry(10, 10, 10));
 
 function equalsApprox (a: number, b: number) {
 	return Math.abs( a - b ) < 0.0001;
@@ -116,7 +115,7 @@ test('threeToCannon - shape - mesh', function (t) {
 
 test('threeToCannon - transform - position', function (t) {
 	const group = new Group();
-	const object = new Mesh(new BoxBufferGeometry(10, 10, 10));
+	const object = new Mesh(new BoxGeometry(10, 10, 10));
 	const matrix = new Matrix4().makeTranslation(0, 50, 0);
 	object.geometry.applyMatrix4(matrix);
 	group.position.set(100, 0, 0);
@@ -136,21 +135,4 @@ test('threeToCannon - transform - position', function (t) {
 	t.is( offset?.y, 50, 'box.offset.y' );
 	t.is( offset?.z, 0, 'box.offset.z' );
 	t.is( orientation, undefined, 'box.orientation' );
-});
-
-test('threeToCannon - legacy geometry', function (t) {
-	const geometry = new Geometry();
-	geometry.vertices.push(
-		new Vector3(2, 2, 2),
-		new Vector3(0, 0, 0),
-		new Vector3(-2, -2, -2),
-	);
-	const mesh = new Mesh(geometry as unknown as BufferGeometry);
-
-	const {shape: box} = threeToCannon(mesh, {type: ShapeType.BOX}) as ShapeResult<Box>;
-
-	t.is( box.type, Shape.types.BOX, 'box.type' );
-	t.is( box.halfExtents.x, 2, 'box.halfExtents.x' );
-	t.is( box.halfExtents.y, 2, 'box.halfExtents.y' );
-	t.is( box.halfExtents.z, 2, 'box.halfExtents.z' );
 });

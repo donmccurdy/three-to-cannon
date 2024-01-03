@@ -1,5 +1,4 @@
 import { BufferAttribute, BufferGeometry, Mesh, Object3D, Quaternion, Vector3 } from 'three';
-import type { Geometry } from 'three/examples/jsm/deprecated/Geometry';
 
 const _v1 = new Vector3();
 const _v2 = new Vector3();
@@ -30,13 +29,8 @@ export function getGeometry (object: Object3D): BufferGeometry | null {
 }
 
 function normalizeGeometry (mesh: Mesh): BufferGeometry {
-	let geometry: BufferGeometry = mesh.geometry;
-	if ((geometry as unknown as Geometry).toBufferGeometry) {
-		geometry = (geometry as unknown as Geometry).toBufferGeometry();
-	} else {
-		// Preserve original type, e.g. CylinderBufferGeometry.
-		geometry = geometry.clone();
-	}
+	// Preserve original type, e.g. CylinderBufferGeometry.
+	const geometry: BufferGeometry = mesh.geometry.clone();
 
 	mesh.updateMatrixWorld();
 	mesh.matrixWorld.decompose(_v1, _q1, _v2);
