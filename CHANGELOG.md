@@ -2,7 +2,7 @@
 
 ## v5
 
-- Removed support for deprecated THREE.Geometry.
+- Removed support for deprecated THREE.Geometry, use THREE.BufferGeometry instead.
 
 ## v4
 
