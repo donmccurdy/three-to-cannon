@@ -48,8 +48,8 @@
     "@types/three": ">=0.160.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "6.17.0",
-    "@typescript-eslint/parser": "6.17.0",
+    "@typescript-eslint/eslint-plugin": "6.18.1",
+    "@typescript-eslint/parser": "6.18.1",
     "ava": "6.0.1",
     "c8": "8.0.1",
     "cannon-es": "0.20.0",
