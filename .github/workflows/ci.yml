@@ -36,6 +36,6 @@ jobs:
                   yarn coverage:report
             - name: Report coverage
               if: ${{ env.COVERAGE == 'true' }}
-              uses: codecov/codecov-action@v3
+              uses: codecov/codecov-action@v4
               with:
                   files: coverage/coverage.lcov
