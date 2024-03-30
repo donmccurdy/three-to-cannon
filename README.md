@@ -57,7 +57,7 @@ const result = threeToCannon(object3D, {type: ShapeType.MESH});
 
 // Result object includes a CANNON.Shape instance, and (optional)
 // an offset or quaternion for that shape.
-const {shape, offset, quaternion} = result;
+const {shape, offset, orientation} = result;
 
 // Add the shape to a CANNON.Body.
 body.addShape(shape, offset, orientation);
