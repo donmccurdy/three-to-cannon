@@ -48,8 +48,8 @@
     "@types/three": ">=0.160.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "7.4.0",
-    "@typescript-eslint/parser": "7.4.0",
+    "@typescript-eslint/eslint-plugin": "7.5.0",
+    "@typescript-eslint/parser": "7.5.0",
     "ava": "6.1.2",
     "c8": "9.1.0",
     "cannon-es": "0.20.0",
@@ -58,7 +58,7 @@
     "rimraf": "5.0.5",
     "three": "0.160.0",
     "tsx": "^4.7.0",
-    "typescript": "5.4.3"
+    "typescript": "5.4.4"
   },
   "files": [
     "dist/",
