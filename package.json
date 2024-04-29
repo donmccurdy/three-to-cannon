@@ -48,12 +48,12 @@
     "@types/three": ">=0.160.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "7.7.0",
-    "@typescript-eslint/parser": "7.7.0",
+    "@typescript-eslint/eslint-plugin": "7.7.1",
+    "@typescript-eslint/parser": "7.7.1",
     "ava": "6.1.2",
     "c8": "9.1.0",
     "cannon-es": "0.20.0",
-    "eslint": "9.1.0",
+    "eslint": "9.1.1",
     "microbundle": "0.15.1",
     "rimraf": "5.0.5",
     "three": "0.160.0",
