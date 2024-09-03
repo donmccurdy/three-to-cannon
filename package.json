@@ -5,6 +5,7 @@
   "type": "module",
   "sideEffects": false,
   "source": "./src/index.ts",
+  "types": "./dist/src/index.d.ts",
   "main": "./dist/three-to-cannon.cjs",
   "module": "./dist/three-to-cannon.esm.js",
   "exports": {
