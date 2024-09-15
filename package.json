@@ -1,6 +1,6 @@
 {
   "name": "three-to-cannon",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Convert a THREE.Mesh to a CANNON.Shape.",
   "type": "module",
   "sideEffects": false,
