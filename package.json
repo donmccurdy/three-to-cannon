@@ -56,7 +56,7 @@
     "cannon-es": "0.20.0",
     "eslint": "9.1.1",
     "microbundle": "0.15.1",
-    "rimraf": "5.0.10",
+    "rimraf": "6.0.1",
     "three": "0.160.0",
     "tsx": "^4.7.0",
     "typescript": "5.8.2"
