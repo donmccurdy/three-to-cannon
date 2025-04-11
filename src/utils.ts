@@ -35,6 +35,13 @@ function normalizeGeometry (mesh: Mesh): BufferGeometry {
 	mesh.updateMatrixWorld();
 	mesh.matrixWorld.decompose(_v1, _q1, _v2);
 	geometry.scale(_v2.x, _v2.y, _v2.z);
+	// If it is a index BufferGeometry, It's nessary transform to NonIndexed BufferGeometry
+	// I face with an issue, when I render a trimesh. The collision not work correctly.
+	// when I add this code, it solve the problem.
+	// so i guess, cannon use a non indexed geometry
+	if (geometry.index) {
+		return geometry.toNonIndexed();
+	}
 	return geometry;
 }
 
